@@ -119,4 +119,30 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>homolog</id>
+			<properties>
+				<activatedProperties>homolog</activatedProperties>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<properties>
+				<activatedProperties>prod</activatedProperties>
+			</properties>
+		</profile>
+	</profiles>
+
+	<distributionManagement>
+		<repository>
+			<id>internal.repo</id>
+			<name>Internal repo</name>
+			<url>file:///m/</url>
+		</repository>
+	</distributionManagement>
+
 </project>
