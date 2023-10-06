@@ -1,4 +1,4 @@
-FROM maven:3.8.6-openjdk-11-slim
+FROM maven:3.6-openjdk-17-slim
 
 RUN apt update -y
 RUN apt install -y tzdata
