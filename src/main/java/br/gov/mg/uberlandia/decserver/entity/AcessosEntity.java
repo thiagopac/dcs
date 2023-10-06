@@ -2,8 +2,9 @@ package br.gov.mg.uberlandia.decserver.entity;
 
 
 import io.swagger.annotations.ApiModel;
-import jakarta.persistence.*;
 import lombok.*;
+
+import javax.persistence.*;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE ACESSOS.")

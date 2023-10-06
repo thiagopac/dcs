@@ -1,7 +1,7 @@
 package br.gov.mg.uberlandia.decserver.entity;
 
 import io.swagger.annotations.ApiModel;
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 import java.sql.Clob;
 import java.util.Date;

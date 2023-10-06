@@ -65,7 +65,7 @@ node{
     def dockerRegistryCredentials = "dockerRegistryCredentials"
     def bitbucketCredentials = "jenkins"
     def builderImageVersion  = "${params.selectedBuilderVersion}"
-    def emails = "adalberto.maciel@ibrowse-sds.com.br,thiago.castro@ibrowse-sds.com.br"
+    def emails = "adalberto.maciel@ibrowse-sds.com.br,thiago.castro@ibrowse-sds.com.br,ana.silva@ibrowse-sds.com.br"
     def m2path = "/var/jenkins_home/.m2"
 
     try{
