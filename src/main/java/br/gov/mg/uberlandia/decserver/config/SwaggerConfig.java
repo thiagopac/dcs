@@ -21,7 +21,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
         return new Docket(DocumentationType.SWAGGER_2)
             .select()
             .paths(PathSelectors.any())
-            .apis(RequestHandlerSelectors.basePackage("br.gov.mg.uberlandia.dec-server.controller"))
+            .apis(RequestHandlerSelectors.basePackage("br.gov.mg.uberlandia.decserver.controller"))
             .build()
             .pathMapping("/")
             .apiInfo(metaData());

@@ -2,9 +2,14 @@ package br.gov.mg.uberlandia.decserver.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import br.gov.mg.uberlandia.decserver.dto.AcessoDTO;
 import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
 import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
-import br.gov.mg.uberlandia.decserver.repository.AcessoRepository;
+import br.gov.mg.uberlandia.decserver.entity.siat.PessoasEntity;
+import br.gov.mg.uberlandia.decserver.repository.AcessosRepository;
+import br.gov.mg.uberlandia.decserver.repository.siat.PessoasRepository;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +17,10 @@ import java.util.stream.Collectors;
 public class AcessoService {
 
     @Autowired
-    private AcessoRepository acessoRepository;
+    private AcessosRepository acessoRepository;
+
+    @Autowired
+    private PessoasRepository pessoasRepository;
 
     public List<EmpresaDTO> consultarEmpresasPorCpfCnpj(String cpfCnpj) {
         List<AcessosEntity> acessos = acessoRepository.findByCpfCnpjAcesso(cpfCnpj);
@@ -37,4 +45,30 @@ public class AcessoService {
         empresaDTO.setDsEmailEmpresa(acesso.getDsEmailAcesso());
         return empresaDTO;
     }
+
+    public Object verificarUsuarioPorCpfCnpj(String cpfCnpj) {
+        int length = cpfCnpj.length();
+        
+        if (length < 2) {
+            return null;
+        }
+    
+        String numeroBase = cpfCnpj.substring(0, length - 2);
+        String dvCgcCpfPessoa = cpfCnpj.substring(length - 2);
+    
+        List<AcessosEntity> acessos = acessoRepository.findByCpfCnpjAcesso(cpfCnpj);
+    
+        if (!acessos.isEmpty()) {
+            return null;
+        } else {
+            PessoasEntity pessoa = pessoasRepository.findByNrCgcCpfPessoaAndDvCgcCpfPessoa(numeroBase, dvCgcCpfPessoa);
+            if (pessoa != null) {
+                return new AcessoDTO(pessoa.getNmPessoa(), pessoa.getDsEmail());
+            } else {
+                return null;
+            }
+        }
+    }
+    
+    
 }
