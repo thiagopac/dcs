@@ -2,6 +2,7 @@ package br.gov.mg.uberlandia.decserver.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.gov.mg.uberlandia.decserver.dto.AcessoDTO;
 import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
@@ -9,6 +10,7 @@ import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
 import br.gov.mg.uberlandia.decserver.entity.siat.PessoasEntity;
 import br.gov.mg.uberlandia.decserver.repository.AcessosRepository;
 import br.gov.mg.uberlandia.decserver.repository.siat.PessoasRepository;
+import oracle.net.aso.e;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -70,5 +72,16 @@ public class AcessoService {
         }
     }
     
-    
+    @Transactional
+    public boolean atualizarUsuario(String cpfCnpj, long nrTelAcesso, String dsEmailAcesso) {
+        int length = cpfCnpj.length();
+
+        if (length < 2) {
+            return false;
+        }
+
+        int rowsUpdated = acessoRepository.updateNrTelAcessoAndDsEmailAcessoByCpfCnpjAcesso(cpfCnpj, nrTelAcesso, dsEmailAcesso);
+
+        return rowsUpdated > 0;
+    }
 }
