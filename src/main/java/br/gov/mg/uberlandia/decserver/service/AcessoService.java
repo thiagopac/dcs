@@ -65,7 +65,7 @@ public class AcessoService {
         } else {
             PessoasEntity pessoa = pessoasRepository.findByNrCgcCpfPessoaAndDvCgcCpfPessoa(numeroBase, dvCgcCpfPessoa);
             if (pessoa != null) {
-                return new AcessoDTO(pessoa.getNmPessoa(), pessoa.getDsEmail());
+                return new AcessoDTO(pessoa.getNmPessoa(), cpfCnpj, pessoa.getDsEmail());
             } else {
                 return null;
             }

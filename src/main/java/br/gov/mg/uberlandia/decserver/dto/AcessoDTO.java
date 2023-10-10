@@ -23,8 +23,9 @@ public class AcessoDTO {
         this.statusAcesso = statusAcesso;
     }
 
-    public AcessoDTO(String nmAcesso, String dsEmailAcesso) {
+    public AcessoDTO(String nmAcesso, String cpfCnpjAcesso, String dsEmailAcesso) {
         this.nmAcesso = nmAcesso;
+        this.cpfCnpjAcesso = cpfCnpjAcesso;
         this.dsEmailAcesso = dsEmailAcesso;
     }
 }
