@@ -13,13 +13,13 @@ import java.util.Date;
 public class EnviosEntity extends GenericEntity{
 
 
-    @Id @SequenceGenerator(name = "DB_DEC.ACESSOS", sequenceName = "DB_DEC.ACESSOS", allocationSize = 1)
-    @GeneratedValue(generator = "DB_DEC.ACESSOS", strategy = GenerationType.AUTO)
-    @Column(name = "OID_ACESSOS", nullable = false, length = 12)
-    private Long oidEnvios;
+    @Id @SequenceGenerator(name = "DB_DEC.ENVIOS", sequenceName = "DB_DEC.ENVIOS", allocationSize = 1)
+    @GeneratedValue(generator = "DB_DEC.ENVIOS", strategy = GenerationType.AUTO)
+    @Column(name = "OID_ENVIO", nullable = false, length = 12)
+    private Long oidEnvio;
 
-    @Column(name = "OID_EMPRESA", nullable = false, length = 12)
-    private Long oidEmpresa;
+    @Column(name = "ID_EMPRESA", nullable = false, length = 12)
+    private Long idEmpresa;
 
     @Column(name = "TP_ENVIO", nullable = false, length = 1)
     private Long tpEnvio;

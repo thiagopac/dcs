@@ -21,7 +21,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
         return new Docket(DocumentationType.SWAGGER_2)
             .select()
             .paths(PathSelectors.any())
-            .apis(RequestHandlerSelectors.basePackage("br.gov.mg.uberlandia.edemandas.controller"))
+            .apis(RequestHandlerSelectors.basePackage("br.gov.mg.uberlandia.decserver.controller"))
             .build()
             .pathMapping("/")
             .apiInfo(metaData());
@@ -29,8 +29,8 @@ public class SwaggerConfig implements WebMvcConfigurer {
 
     private ApiInfo metaData() {
         return new ApiInfoBuilder()
-            .title("eDemandas API")
-            .description("API Rest para sistema eDemandas da Prodaub")
+            .title("DEC-SERVER")
+            .description("API Rest para a aplicação Domicílio Eletrônico do Contribuinte (DEC)")
             .build();
     }
 
