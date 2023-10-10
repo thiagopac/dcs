@@ -14,12 +14,12 @@ import java.util.Date;
 public class AcessosEntity extends GenericEntity{
 
     @Id @SequenceGenerator(name = "DB_DEC.ACESSOS", sequenceName = "DB_DEC.ACESSOS", allocationSize = 1)
-    @GeneratedValue(generator = "DB_DEC.ACESSOS", strategy = GenerationType.AUTO)
-    @Column(name = "OID_ACESSOS", nullable = false, length = 12)
-    private Long oidAcessos;
+    @GeneratedValue(generator = "DB_DEC.ACESSO", strategy = GenerationType.AUTO)
+    @Column(name = "OID_ACESSO", nullable = false, length = 12)
+    private Long oidAcesso;
 
-    @Column(name = "OID_EMPRESA", nullable = false, length = 12)
-    private Long oidEmpresa;
+    @Column(name = "ID_EMPRESA", nullable = false, length = 12)
+    private Long idEmpresa;
 
     @Column(name = "NM_ACESSO", nullable = false, length = 100)
     private String nmAcesso;
