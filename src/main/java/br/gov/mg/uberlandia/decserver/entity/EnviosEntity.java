@@ -2,6 +2,9 @@ package br.gov.mg.uberlandia.decserver.entity;
 
 import io.swagger.annotations.ApiModel;
 import javax.persistence.*;
+
+import org.hibernate.annotations.Nationalized;
+
 import lombok.*;
 import java.sql.Clob;
 import java.util.Date;
@@ -13,8 +16,8 @@ import java.util.Date;
 public class EnviosEntity extends GenericEntity{
 
 
-    @Id @SequenceGenerator(name = "DB_DEC.ENVIOS", sequenceName = "DB_DEC.ENVIOS", allocationSize = 1)
-    @GeneratedValue(generator = "DB_DEC.ENVIOS", strategy = GenerationType.AUTO)
+    @Id @SequenceGenerator(name = "DB_DEC.SE_ENVIOS", sequenceName = "DB_DEC.SE_ENVIOS", allocationSize = 1)
+    @GeneratedValue(generator = "DB_DEC.SE_ENVIOS", strategy = GenerationType.AUTO)
     @Column(name = "OID_ENVIO", nullable = false, length = 12)
     private Long oidEnvio;
 
@@ -35,7 +38,7 @@ public class EnviosEntity extends GenericEntity{
     private String dsTituloEnvio;
 
     @Column(name = "DS_COMUNIC_ENVIO", nullable = false)
-    private Clob dsComunicEnvio;
+    private String dsComunicEnvio;
 
     @Column(name = "USU_CONFIG_ENVIO", nullable = true, length = 30)
     private String usuConfigEnvio;

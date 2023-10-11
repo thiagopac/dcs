@@ -12,8 +12,8 @@ import java.util.Date;
 
 public class EmpresasEntity extends GenericEntity{
 
-    @Id @SequenceGenerator(name = "DB_DEC.EMPRESAS", sequenceName = "DB_DEC.EMPRESAS", allocationSize = 1)
-    @GeneratedValue(generator = "DB_DEC.EMPRESAS", strategy = GenerationType.AUTO)
+    @Id @SequenceGenerator(name = "DB_DEC.SE_EMPRESAS", sequenceName = "DB_DEC.SE_EMPRESAS", allocationSize = 1)
+    @GeneratedValue(generator = "DB_DEC.SE_EMPRESAS", strategy = GenerationType.AUTO)
     @Column(name = "OID_EMPRESA", nullable = false, length = 12)
     private Long oidEmpresa;
 

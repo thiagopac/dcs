@@ -62,21 +62,42 @@ public class AcessoService {
             if (pessoa != null) {
                 return new AcessoDTO(pessoa.getNmPessoa(), cpfCnpj, pessoa.getDsEmail());
             } else {
-                return null;
+                return "CPF/CNPJ não encontrado em nossa base de dados";
             }
         }
     }
     
     @Transactional
-    public boolean atualizarUsuario(String cpfCnpj, long nrTelAcesso, String dsEmailAcesso) {
+    public boolean atualizarUsuario(String cpfCnpj, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
         int length = cpfCnpj.length();
 
         if (length < 2) {
             return false;
         }
 
-        int rowsUpdated = acessoRepository.updateNrTelAcessoAndDsEmailAcessoByCpfCnpjAcesso(cpfCnpj, nrTelAcesso, dsEmailAcesso);
+        int rowsUpdated = acessoRepository.updateNmTelAndEmailByCpfCnpjAcesso(cpfCnpj, nmAcesso, nrTelAcesso, dsEmailAcesso);
 
         return rowsUpdated > 0;
+    }
+
+    @Transactional
+    public boolean insertAcesso(String cpfCnpj, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
+        try {
+            AcessosEntity acesso = new AcessosEntity();
+            acesso.setCpfCnpjAcesso(cpfCnpj);
+            acesso.setNmAcesso(dsEmailAcesso);
+            acesso.setNrTelAcesso(nrTelAcesso);
+            acesso.setDsEmailAcesso(dsEmailAcesso);
+            acesso.setIdEmpresa(0L);
+            acesso.setStatusAcesso(1L);
+            acesso.setDsUsuAlter(cpfCnpj);
+
+            acessoRepository.save(acesso);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
