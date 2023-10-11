@@ -1,6 +1,5 @@
 package br.gov.mg.uberlandia.decserver.service;
 
-import java.sql.Clob;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +36,6 @@ public class EnvioService {
 
             return empresasNaoLidos;
         } catch (Exception e) {
-            // Lide com exceções aqui se necessário
             throw new ServiceException("Erro ao consultar empresas com envios não lidos.", e);
         }
     }
@@ -47,40 +45,42 @@ public class EnvioService {
             List<EnviosEntity> enviosEntities = enviosRepository.listarEnviosPorIdEmpresa(idEmpresa);
             List<EnvioDTO> enviosParaEmpresa = new ArrayList<>();
     
-            for (EnviosEntity envioEntity : enviosEntities) {
-                Long oidEnvio = envioEntity.getOidEnvio();
-                Long _idEmpresa = envioEntity.getIdEmpresa();
-                Long tpEnvio = envioEntity.getTpEnvio();
-                Date dtHrEnvio = envioEntity.getDtHrEnvio();
-                Long qtDiasCiencia = envioEntity.getQtDiasCiencia();
-                String dsTituloEnvio = envioEntity.getDsTituloEnvio();
-                String dsComunicEnvio = envioEntity.getDsComunicEnvio();
-                String usuConfigEnvio = envioEntity.getUsuConfigEnvio();
-                Date dtHrConfigEnvio = envioEntity.getDtHrConfigEnvio();
-                String cpfCnpjEnvio = envioEntity.getCpfCnpjEnvio();
-                Long statusEnvio = envioEntity.getStatusEnvio();
-                String dsUsuAlter = envioEntity.getDsUsuAlter();
-                Date dtUltAlter = envioEntity.getDtUltAlter();
-                Long vsVersao = envioEntity.getVsVersao();
-    
-                EnvioDTO envioDTO = new EnvioDTO(
-                    oidEnvio,
-                    _idEmpresa,
-                    tpEnvio,
-                    dtHrEnvio,
-                    qtDiasCiencia,
-                    dsTituloEnvio,
-                    dsComunicEnvio,
-                    usuConfigEnvio,
-                    dtHrConfigEnvio,
-                    cpfCnpjEnvio,
-                    statusEnvio,
-                    dsUsuAlter,
-                    dtUltAlter,
-                    vsVersao
-                );
-    
-                enviosParaEmpresa.add(envioDTO);
+            if (enviosEntities != null) {
+                for (EnviosEntity envioEntity : enviosEntities) {
+                    Long oidEnvio = envioEntity.getOidEnvio();
+                    Long _idEmpresa = envioEntity.getIdEmpresa();
+                    Long tpEnvio = envioEntity.getTpEnvio();
+                    Date dtHrEnvio = envioEntity.getDtHrEnvio();
+                    Long qtDiasCiencia = envioEntity.getQtDiasCiencia();
+                    String dsTituloEnvio = envioEntity.getDsTituloEnvio();
+                    String dsComunicEnvio = envioEntity.getDsComunicEnvio();
+                    String usuConfigEnvio = envioEntity.getUsuConfigEnvio();
+                    Date dtHrConfigEnvio = envioEntity.getDtHrConfigEnvio();
+                    String cpfCnpjEnvio = envioEntity.getCpfCnpjEnvio();
+                    Long statusEnvio = envioEntity.getStatusEnvio();
+                    String dsUsuAlter = envioEntity.getDsUsuAlter();
+                    Date dtUltAlter = envioEntity.getDtUltAlter();
+                    Long vsVersao = envioEntity.getVsVersao();
+        
+                    EnvioDTO envioDTO = new EnvioDTO(
+                        oidEnvio,
+                        _idEmpresa,
+                        tpEnvio,
+                        dtHrEnvio,
+                        qtDiasCiencia,
+                        dsTituloEnvio,
+                        dsComunicEnvio,
+                        usuConfigEnvio,
+                        dtHrConfigEnvio,
+                        cpfCnpjEnvio,
+                        statusEnvio,
+                        dsUsuAlter,
+                        dtUltAlter,
+                        vsVersao
+                    );
+        
+                    enviosParaEmpresa.add(envioDTO);
+                }
             }
     
             return enviosParaEmpresa;

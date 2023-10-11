@@ -2,11 +2,7 @@ package br.gov.mg.uberlandia.decserver.entity;
 
 import io.swagger.annotations.ApiModel;
 import javax.persistence.*;
-
-import org.hibernate.annotations.Nationalized;
-
 import lombok.*;
-import java.sql.Clob;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE ENVIOS.")

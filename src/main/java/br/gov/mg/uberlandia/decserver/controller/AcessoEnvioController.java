@@ -32,8 +32,12 @@ public class AcessoEnvioController {
             @RequestParam(name = "cpfCnpj") String cpfCnpj) {
         try {
             List<EnviosNaoLidosDTO> empresasNaoLidos = envioService.consultarEmpresasNaoLidosPorCpfCnpj(cpfCnpj);
+            if (empresasNaoLidos == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
             return ResponseEntity.ok(empresasNaoLidos);
         } catch (ServiceException e) {
+            logger.error("Erro ao consultar empresas com envios não lidos", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -45,9 +49,15 @@ public class AcessoEnvioController {
             @RequestParam(name = "idEmpresa") long idEmpresa) {
         try {
             List<EnvioDTO> enviosParaEmpresa = envioService.listarEnviosPorIdEmpresa(idEmpresa);
+            if (enviosParaEmpresa == null || enviosParaEmpresa.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
             return ResponseEntity.ok(enviosParaEmpresa);
         } catch (ServiceException e) {
             logger.error("Erro ao listar envios por empresa", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            logger.error("Erro inesperado", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -66,6 +76,9 @@ public class AcessoEnvioController {
             }
         } catch (ServiceException e) {
             logger.error("Erro ao mostrar envio por ID", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao mostrar envio por ID", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
