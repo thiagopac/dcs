@@ -3,7 +3,6 @@ package br.gov.mg.uberlandia.decserver.entity;
 
 import io.swagger.annotations.ApiModel;
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.Date;
 

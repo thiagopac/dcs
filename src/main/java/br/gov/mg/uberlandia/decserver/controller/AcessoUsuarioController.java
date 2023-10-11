@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import br.gov.mg.uberlandia.decserver.dto.AcessoDTO;
 import br.gov.mg.uberlandia.decserver.dto.AtualizacaoAcessoDTO;
 import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
@@ -26,8 +25,8 @@ public class AcessoUsuarioController {
     public ResponseEntity<List<EmpresaDTO>> consultarEmpresasPorCpfCnpj(
             @RequestParam(name = "cpfCnpj") String cpfCnpj) {
         try {
-            List<EmpresaDTO> empresas = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
-            return ResponseEntity.ok(empresas);
+            List<EmpresaDTO> empresasDTOList = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
+            return ResponseEntity.ok(empresasDTOList);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -39,7 +38,7 @@ public class AcessoUsuarioController {
             @RequestParam(name = "cpfCnpj") String cpfCnpj) {
         try {
             Object resultado = acessoService.verificarUsuarioPorCpfCnpj(cpfCnpj);
-            
+
             if (resultado instanceof AcessoDTO) {
                 AcessoDTO acessoDTO = (AcessoDTO) resultado;
                 return ResponseEntity.ok(acessoDTO);
