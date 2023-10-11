@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import br.gov.mg.uberlandia.decserver.dto.AcessoDTO;
 import br.gov.mg.uberlandia.decserver.dto.AtualizacaoAcessoDTO;
 import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
@@ -26,23 +25,26 @@ public class AcessoUsuarioController {
     public ResponseEntity<List<EmpresaDTO>> consultarEmpresasPorCpfCnpj(
             @RequestParam(name = "cpfCnpj") String cpfCnpj) {
         try {
-            List<EmpresaDTO> empresas = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
-            return ResponseEntity.ok(empresas);
+            List<EmpresaDTO> empresasDTOList = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
+            return ResponseEntity.ok(empresasDTOList);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @ApiOperation(value = "Verificar a existência do usuário por CPF ou CNPJ")
+    @ApiOperation(value = "Verificar a existência do usuário por CPF ou CNPJ", notes = "Se o usuário existir na base DEC, ele não precisará ser atualizado, então o retorno será em branco com status 204. Se houver objeto retornado, os dados são provenientes do SIAT e as informações do usuário serão retornadas para serem exibidas e os dados preenchidos deverão ser enviados de volta para criar o acesso do usuário.")
     @GetMapping("/verificar-usuario")
-    public ResponseEntity<AcessoDTO> verificarUsuarioPorCpfCnpj(
+    public ResponseEntity<?> verificarUsuarioPorCpfCnpj(
             @RequestParam(name = "cpfCnpj") String cpfCnpj) {
         try {
             Object resultado = acessoService.verificarUsuarioPorCpfCnpj(cpfCnpj);
-            
+
             if (resultado instanceof AcessoDTO) {
                 AcessoDTO acessoDTO = (AcessoDTO) resultado;
                 return ResponseEntity.ok(acessoDTO);
+            } else if(resultado instanceof String) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultado);
+
             } else {
                 return ResponseEntity.noContent().build();
             }
@@ -56,11 +58,13 @@ public class AcessoUsuarioController {
     public ResponseEntity<String> atualizarUsuarioPorCpfCnpj(
             @RequestBody AtualizacaoAcessoDTO atualizacaoAcessoDTO) {
         try {
-            String cpfCnpj = atualizacaoAcessoDTO.getCpfCnpj();
+            String cpfCnpjAcesso = atualizacaoAcessoDTO.getCpfCnpjAcesso();
+            String nmAcesso = atualizacaoAcessoDTO.getNmAcesso();
             long nrTelAcesso = atualizacaoAcessoDTO.getNrTelAcesso();
             String dsEmailAcesso = atualizacaoAcessoDTO.getDsEmailAcesso();
 
-            boolean atualizado = acessoService.atualizarUsuario(cpfCnpj, nrTelAcesso, dsEmailAcesso);
+            // boolean atualizado = acessoService.atualizarUsuario(cpfCnpjAcesso, nmAcesso, nrTelAcesso, dsEmailAcesso);
+            boolean atualizado = acessoService.insertAcesso(cpfCnpjAcesso, nmAcesso, nrTelAcesso, dsEmailAcesso);
 
             if (atualizado) {
                 return ResponseEntity.ok("Dados do usuário atualizados com sucesso.");

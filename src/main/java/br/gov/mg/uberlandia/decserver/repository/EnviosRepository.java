@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
-
 import java.util.List;
 
 @Repository
@@ -19,4 +18,7 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
            "AND e.statusEnvio = 0 " +
            "GROUP BY e.idEmpresa, emp.oidEmpresa, emp.nmEmpresa, emp.cnpjEmpresa, emp.nrTelEmpresa, emp.dsEmailEmpresa")
     List<Object[]> countNaoLidosPorEmpresa(@Param("cpfCnpj") String cpfCnpj);
+
+    @Query("SELECT e FROM EnviosEntity e WHERE e.idEmpresa = :idEmpresa")
+    List<EnviosEntity> listarEnviosPorIdEmpresa(@Param("idEmpresa") Long idEmpresa);
 }

@@ -1,9 +1,7 @@
 package br.gov.mg.uberlandia.decserver.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-
 import javax.persistence.*;
 import java.util.Date;
 

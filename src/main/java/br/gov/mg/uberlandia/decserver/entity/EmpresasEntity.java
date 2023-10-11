@@ -1,17 +1,19 @@
 package br.gov.mg.uberlandia.decserver.entity;
 
 import io.swagger.annotations.ApiModel;
+import lombok.*;
 import javax.persistence.*;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE EMPRESAS.")
+@Data
 @Entity
 @Table(name = "EMPRESAS", schema = "DB_DEC")
 
 public class EmpresasEntity extends GenericEntity{
 
-    @Id @SequenceGenerator(name = "DB_DEC.EMPRESAS", sequenceName = "DB_DEC.EMPRESAS", allocationSize = 1)
-    @GeneratedValue(generator = "DB_DEC.EMPRESAS", strategy = GenerationType.AUTO)
+    @Id @SequenceGenerator(name = "DB_DEC.SE_EMPRESAS", sequenceName = "DB_DEC.SE_EMPRESAS", allocationSize = 1)
+    @GeneratedValue(generator = "DB_DEC.SE_EMPRESAS", strategy = GenerationType.AUTO)
     @Column(name = "OID_EMPRESA", nullable = false, length = 12)
     private Long oidEmpresa;
 

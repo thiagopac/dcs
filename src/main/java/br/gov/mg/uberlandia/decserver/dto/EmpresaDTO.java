@@ -7,6 +7,16 @@ public class EmpresaDTO {
     private Long nrTelEmpresa;
     private String dsEmailEmpresa;
 
+    public EmpresaDTO(){}
+
+    public EmpresaDTO(Long oidEmpresa, String nmEmpresa, String cnpjEmpresa, Long nrTelEmpresa, String dsEmailEmpresa) {
+        this.oidEmpresa = oidEmpresa;
+        this.nmEmpresa = nmEmpresa;
+        this.cnpjEmpresa = cnpjEmpresa;
+        this.nrTelEmpresa = nrTelEmpresa;
+        this.dsEmailEmpresa = dsEmailEmpresa;
+    }
+
     public Long getOidEmpresa() {
         return oidEmpresa;
     }
@@ -46,5 +56,6 @@ public class EmpresaDTO {
     public void setDsEmailEmpresa(String dsEmailEmpresa) {
         this.dsEmailEmpresa = dsEmailEmpresa;
     }
+    
 }
 
