@@ -3,7 +3,6 @@ package br.gov.mg.uberlandia.decserver.entity;
 
 import io.swagger.annotations.ApiModel;
 import lombok.*;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -13,8 +12,8 @@ import java.util.Date;
 @Table(name = "ACESSOS", schema = "DB_DEC")
 public class AcessosEntity extends GenericEntity{
 
-    @Id @SequenceGenerator(name = "DB_DEC.ACESSOS", sequenceName = "DB_DEC.ACESSOS", allocationSize = 1)
-    @GeneratedValue(generator = "DB_DEC.ACESSO", strategy = GenerationType.AUTO)
+    @Id @SequenceGenerator(name = "DB_DEC.SE_ACESSOS", sequenceName = "DB_DEC.SE_ACESSOS", allocationSize = 1)
+    @GeneratedValue(generator = "DB_DEC.SE_ACESSOS", strategy = GenerationType.AUTO)
     @Column(name = "OID_ACESSO", nullable = false, length = 12)
     private Long oidAcesso;
 
