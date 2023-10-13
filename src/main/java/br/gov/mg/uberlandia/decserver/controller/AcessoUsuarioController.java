@@ -1,5 +1,7 @@
 package br.gov.mg.uberlandia.decserver.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +12,9 @@ import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
 import br.gov.mg.uberlandia.decserver.service.AcessoService;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Data
@@ -20,12 +24,17 @@ public class AcessoUsuarioController {
     @Autowired
     private AcessoService acessoService;
 
+    private static Logger logger = LoggerFactory.getLogger(AcessoEnvioController.class);
+
     @ApiOperation(value = "Consultar empresas por CPF ou CNPJ do usuário")
     @GetMapping("/consultar-empresas")
     public ResponseEntity<List<EmpresaDTO>> consultarEmpresasPorCpfCnpj(
             @RequestParam(name = "cpfCnpj") String cpfCnpj) {
         try {
             List<EmpresaDTO> empresasDTOList = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
+            if (empresasDTOList.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
             return ResponseEntity.ok(empresasDTOList);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -44,18 +53,18 @@ public class AcessoUsuarioController {
                 return ResponseEntity.ok(acessoDTO);
             } else if(resultado instanceof String) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultado);
-
             } else {
                 return ResponseEntity.noContent().build();
             }
         } catch (Exception e) {
+            logger.error("Erro ao verificar usuário", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @ApiOperation(value = "Atualizar dados do usuário por CPF ou CNPJ")
     @PostMapping("/atualizar-usuario")
-    public ResponseEntity<String> atualizarUsuarioPorCpfCnpj(
+    public ResponseEntity<Map<String, String>> atualizarUsuarioPorCpfCnpj(
             @RequestBody AtualizacaoAcessoDTO atualizacaoAcessoDTO) {
         try {
             String cpfCnpjAcesso = atualizacaoAcessoDTO.getCpfCnpjAcesso();
@@ -67,11 +76,16 @@ public class AcessoUsuarioController {
             boolean atualizado = acessoService.insertAcesso(cpfCnpjAcesso, nmAcesso, nrTelAcesso, dsEmailAcesso);
 
             if (atualizado) {
-                return ResponseEntity.ok("Dados do usuário atualizados com sucesso.");
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Dados do usuário atualizados com sucesso.");
+                return ResponseEntity.ok(response);
             } else {
-                return new ResponseEntity<>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Usuário não encontrado.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } catch (Exception e) {
+            logger.error("Erro ao atualizar usuário", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

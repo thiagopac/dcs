@@ -1,15 +1,20 @@
 package br.gov.mg.uberlandia.decserver.service;
 
-import java.sql.Clob;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import br.gov.mg.uberlandia.decserver.dto.EnvioDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnviosNaoLidosDTO;
+import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
+import br.gov.mg.uberlandia.decserver.repository.AcessosRepository;
 import br.gov.mg.uberlandia.decserver.repository.EnviosRepository;
 
 @Service
@@ -17,6 +22,9 @@ public class EnvioService {
 
     @Autowired
     private EnviosRepository enviosRepository;
+
+    @Autowired
+    private AcessosRepository acessosRepository;
 
     public List<EnviosNaoLidosDTO> consultarEmpresasNaoLidosPorCpfCnpj(String cpfCnpj) {
         try {
@@ -37,64 +45,75 @@ public class EnvioService {
 
             return empresasNaoLidos;
         } catch (Exception e) {
-            // Lide com exceções aqui se necessário
             throw new ServiceException("Erro ao consultar empresas com envios não lidos.", e);
         }
     }
 
-    public List<EnvioDTO> listarEnviosPorIdEmpresa(long idEmpresa) {
+    public Page<EnvioDTO> listarEnviosPorIdEmpresa(long idEmpresa, Long status, Pageable pageable) {
         try {
-            List<EnviosEntity> enviosEntities = enviosRepository.listarEnviosPorIdEmpresa(idEmpresa);
+            Page<EnviosEntity> enviosEntitiesPage = enviosRepository.listarEnviosPorIdEmpresa(idEmpresa, status, pageable);
             List<EnvioDTO> enviosParaEmpresa = new ArrayList<>();
-    
-            for (EnviosEntity envioEntity : enviosEntities) {
+            
+            for (EnviosEntity envioEntity : enviosEntitiesPage) {
+                
                 Long oidEnvio = envioEntity.getOidEnvio();
-                Long _idEmpresa = envioEntity.getIdEmpresa();
-                Long tpEnvio = envioEntity.getTpEnvio();
                 Date dtHrEnvio = envioEntity.getDtHrEnvio();
-                Long qtDiasCiencia = envioEntity.getQtDiasCiencia();
                 String dsTituloEnvio = envioEntity.getDsTituloEnvio();
-                String dsComunicEnvio = envioEntity.getDsComunicEnvio();
-                String usuConfigEnvio = envioEntity.getUsuConfigEnvio();
-                Date dtHrConfigEnvio = envioEntity.getDtHrConfigEnvio();
-                String cpfCnpjEnvio = envioEntity.getCpfCnpjEnvio();
                 Long statusEnvio = envioEntity.getStatusEnvio();
-                String dsUsuAlter = envioEntity.getDsUsuAlter();
-                Date dtUltAlter = envioEntity.getDtUltAlter();
-                Long vsVersao = envioEntity.getVsVersao();
+
+                EnvioDTO envioDTO = new EnvioDTO();
     
-                EnvioDTO envioDTO = new EnvioDTO(
-                    oidEnvio,
-                    _idEmpresa,
-                    tpEnvio,
-                    dtHrEnvio,
-                    qtDiasCiencia,
-                    dsTituloEnvio,
-                    dsComunicEnvio,
-                    usuConfigEnvio,
-                    dtHrConfigEnvio,
-                    cpfCnpjEnvio,
-                    statusEnvio,
-                    dsUsuAlter,
-                    dtUltAlter,
-                    vsVersao
-                );
-    
+                envioDTO.setOidEnvio(oidEnvio);
+                envioDTO.setDtHrEnvio(dtHrEnvio);
+                envioDTO.setDsTituloEnvio(dsTituloEnvio);
+                envioDTO.setStatusEnvio(statusEnvio);
+                
                 enviosParaEmpresa.add(envioDTO);
             }
-    
-            return enviosParaEmpresa;
+            
+            return new PageImpl<>(enviosParaEmpresa, pageable, enviosEntitiesPage.getTotalElements());
         } catch (Exception e) {
             throw new ServiceException("Erro ao listar envios por ID da empresa.", e);
         }
     }
 
-    public EnvioDTO mostrarEnvioPorId(long idEnvio) {
+    @Transactional
+    public EnvioDTO mostrarEnvioPorId(long idEnvio, String cpfCnpjAcesso, String visao) {
         try {
+
+            EnviosEntity enviosEntity = enviosRepository.findByIdEnvio(idEnvio);
+
+            if (visao.equals("contribuinte")) {
+                AcessosEntity acessosEntity = acessosRepository.findByCpfCnpjAcessoAndIdEmpresa(cpfCnpjAcesso, enviosEntity.getIdEmpresa());
+
+                if (acessosEntity != null) {
+                    enviosRepository.atualizarStatusEnvioSeNecessario(idEnvio, 1, acessosEntity.getNmAcesso(), new Date());
+                }
+            }
+
             EnviosEntity envioEntity = enviosRepository.findById(idEnvio).orElse(null);
 
             if (envioEntity != null) {
-                return converterParaEnvioDTO(envioEntity);
+
+                EnvioDTO envioDTO = new EnvioDTO(); 
+                    envioDTO.setOidEnvio(envioEntity.getOidEnvio());
+                    envioDTO.setDtHrEnvio(envioEntity.getDtHrEnvio());
+                    envioDTO.setDsTituloEnvio(envioEntity.getDsTituloEnvio());
+                    envioDTO.setDsComunicEnvio(envioEntity.getDsComunicEnvio());
+                    envioDTO.setStatusEnvio(envioEntity.getStatusEnvio());
+                    envioDTO.setQtDiasCiencia(envioEntity.getQtDiasCiencia());
+
+                if (visao.equals("pmu")) {
+                    envioDTO.setTpEnvio(envioEntity.getTpEnvio());
+                    envioDTO.setUsuConfigEnvio(envioEntity.getUsuConfigEnvio());
+                    envioDTO.setDtHrConfigEnvio(envioEntity.getDtHrConfigEnvio());
+                    envioDTO.setCpfCnpjEnvio(envioEntity.getCpfCnpjEnvio());
+                    envioDTO.setDsUsuAlter(envioEntity.getDsUsuAlter());
+                    envioDTO.setDtUltAlter(envioEntity.getDtUltAlter());
+                    envioDTO.setVsVersao(envioEntity.getVsVersao());
+                }
+
+                return envioDTO;
             } else {
                 return null;
             }
@@ -103,22 +122,4 @@ public class EnvioService {
         }
     }
 
-    private EnvioDTO converterParaEnvioDTO(EnviosEntity envioEntity) {
-        return new EnvioDTO(
-            envioEntity.getOidEnvio(),
-            envioEntity.getIdEmpresa(),
-            envioEntity.getTpEnvio(),
-            envioEntity.getDtHrEnvio(),
-            envioEntity.getQtDiasCiencia(),
-            envioEntity.getDsTituloEnvio(),
-            envioEntity.getDsComunicEnvio(),
-            envioEntity.getUsuConfigEnvio(),
-            envioEntity.getDtHrConfigEnvio(),
-            envioEntity.getCpfCnpjEnvio(),
-            envioEntity.getStatusEnvio(),
-            envioEntity.getDsUsuAlter(),
-            envioEntity.getDtUltAlter(),
-            envioEntity.getVsVersao()
-        );
-    }
 }

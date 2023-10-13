@@ -19,39 +19,7 @@ public class EnvioDTO {
     private Long vsVersao;
 
     public EnvioDTO() {}
-
-    public EnvioDTO(
-        Long oidEnvio,
-        Long idEmpresa,
-        Long tpEnvio,
-        Date dtHrEnvio,
-        Long qtDiasCiencia,
-        String dsTituloEnvio,
-        String dsComunicEnvio,
-        String usuConfigEnvio,
-        Date dtHrConfigEnvio,
-        String cpfCnpjEnvio,
-        Long statusEnvio,
-        String dsUsuAlter,
-        Date dtUltAlter,
-        Long vsVersao
-    ) {
-        this.oidEnvio = oidEnvio;
-        this.idEmpresa = idEmpresa;
-        this.tpEnvio = tpEnvio;
-        this.dtHrEnvio = dtHrEnvio;
-        this.qtDiasCiencia = qtDiasCiencia;
-        this.dsTituloEnvio = dsTituloEnvio;
-        this.dsComunicEnvio = dsComunicEnvio;
-        this.usuConfigEnvio = usuConfigEnvio;
-        this.dtHrConfigEnvio = dtHrConfigEnvio;
-        this.cpfCnpjEnvio = cpfCnpjEnvio;
-        this.statusEnvio = statusEnvio;
-        this.dsUsuAlter = dsUsuAlter;
-        this.dtUltAlter = dtUltAlter;
-        this.vsVersao = vsVersao;
-    }
-
+    
     public Long getOidEnvio() {
         return oidEnvio;
     }
