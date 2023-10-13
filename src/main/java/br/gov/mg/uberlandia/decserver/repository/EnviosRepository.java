@@ -1,5 +1,7 @@
 package br.gov.mg.uberlandia.decserver.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,7 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
            "GROUP BY e.idEmpresa, emp.oidEmpresa, emp.nmEmpresa, emp.cnpjEmpresa, emp.nrTelEmpresa, emp.dsEmailEmpresa")
     List<Object[]> countNaoLidosPorEmpresa(@Param("cpfCnpj") String cpfCnpj);
 
-    @Query("SELECT e FROM EnviosEntity e WHERE e.idEmpresa = :idEmpresa")
-    List<EnviosEntity> listarEnviosPorIdEmpresa(@Param("idEmpresa") Long idEmpresa);
+    @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.idEmpresa = :idEmpresa")
+    Page<EnviosEntity> listarEnviosPorIdEmpresa(@Param("idEmpresa") Long idEmpresa, @Param("status") Long status, Pageable pageable);
+    
 }
