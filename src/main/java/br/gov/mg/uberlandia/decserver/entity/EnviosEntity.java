@@ -6,7 +6,6 @@ import javax.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
 import lombok.*;
-import java.sql.Clob;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE ENVIOS.")

@@ -9,6 +9,8 @@ import java.util.List;
 public interface AcessosRepository extends JpaRepository<AcessosEntity, Long> {
     List<AcessosEntity> findByCpfCnpjAcesso(String cpfCnpjAcesso);
 
+    AcessosEntity findByCpfCnpjAcessoAndIdEmpresa(String cpfCnpjAcesso, Long idEmpresa);
+
     @Modifying
     @Query("UPDATE AcessosEntity a SET a.nmAcesso = :nmAcesso, a.nrTelAcesso = :nrTelAcesso, a.dsEmailAcesso = :dsEmailAcesso WHERE a.cpfCnpjAcesso = :cpfCnpj")
     int updateNmTelAndEmailByCpfCnpjAcesso(

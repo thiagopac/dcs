@@ -27,6 +27,10 @@ public class AcessoService {
     private EmpresasRepository empresasRepository;
 
     public List<EmpresaDTO> consultarEmpresasPorCpfCnpj(String cpfCnpj) {
+        if (cpfCnpj == null || cpfCnpj.isEmpty()) {
+            throw new IllegalArgumentException("CPF/CNPJ não pode ser nulo ou vazio");
+        }
+    
         List<EmpresasEntity> empresasList = empresasRepository.findEmpresasByCpfCnpjAcesso(cpfCnpj);
     
         List<EmpresaDTO> empresasDTOList = new ArrayList<>();
@@ -44,34 +48,38 @@ public class AcessoService {
     }
 
     public Object verificarUsuarioPorCpfCnpj(String cpfCnpj) {
-        int length = cpfCnpj.length();
-        
-        if (length < 2) {
+        if (cpfCnpj == null || cpfCnpj.length() < 2) {
             return null;
         }
     
-        String numeroBase = cpfCnpj.substring(0, length - 2);
-        String dvCgcCpfPessoa = cpfCnpj.substring(length - 2);
+        String numeroBase = cpfCnpj.substring(0, cpfCnpj.length() - 2);
+        String dvCgcCpfPessoa = cpfCnpj.substring(cpfCnpj.length() - 2);
     
         List<AcessosEntity> acessos = acessoRepository.findByCpfCnpjAcesso(cpfCnpj);
     
         if (!acessos.isEmpty()) {
             return null;
+        }
+    
+        PessoasEntity pessoa = pessoasRepository.findByNrCgcCpfPessoaAndDvCgcCpfPessoa(numeroBase, dvCgcCpfPessoa);
+        if (pessoa != null) {
+            return new AcessoDTO(pessoa.getNmPessoa(), cpfCnpj, pessoa.getDsEmail());
         } else {
-            PessoasEntity pessoa = pessoasRepository.findByNrCgcCpfPessoaAndDvCgcCpfPessoa(numeroBase, dvCgcCpfPessoa);
-            if (pessoa != null) {
-                return new AcessoDTO(pessoa.getNmPessoa(), cpfCnpj, pessoa.getDsEmail());
-            } else {
-                return "CPF/CNPJ não encontrado em nossa base de dados";
-            }
+            return "CPF/CNPJ não encontrado em nossa base de dados";
         }
     }
     
     @Transactional
     public boolean atualizarUsuario(String cpfCnpj, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
-        int length = cpfCnpj.length();
+        if (cpfCnpj == null || nmAcesso == null || dsEmailAcesso == null) {
+            return false;
+        }
 
-        if (length < 2) {
+        if (cpfCnpj.length() < 2) {
+            return false;
+        }
+
+        if (nrTelAcesso < 0) {
             return false;
         }
 
@@ -83,6 +91,10 @@ public class AcessoService {
     @Transactional
     public boolean insertAcesso(String cpfCnpj, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
         try {
+            if (cpfCnpj == null || nmAcesso == null || dsEmailAcesso == null) {
+                return false;
+            }
+
             AcessosEntity acesso = new AcessosEntity();
             acesso.setCpfCnpjAcesso(cpfCnpj);
             acesso.setNmAcesso(dsEmailAcesso);
