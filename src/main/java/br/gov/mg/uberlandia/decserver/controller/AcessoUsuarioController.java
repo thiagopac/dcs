@@ -12,7 +12,9 @@ import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
 import br.gov.mg.uberlandia.decserver.service.AcessoService;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Data
@@ -62,7 +64,7 @@ public class AcessoUsuarioController {
 
     @ApiOperation(value = "Atualizar dados do usuário por CPF ou CNPJ")
     @PostMapping("/atualizar-usuario")
-    public ResponseEntity<String> atualizarUsuarioPorCpfCnpj(
+    public ResponseEntity<Map<String, String>> atualizarUsuarioPorCpfCnpj(
             @RequestBody AtualizacaoAcessoDTO atualizacaoAcessoDTO) {
         try {
             String cpfCnpjAcesso = atualizacaoAcessoDTO.getCpfCnpjAcesso();
@@ -74,9 +76,13 @@ public class AcessoUsuarioController {
             boolean atualizado = acessoService.insertAcesso(cpfCnpjAcesso, nmAcesso, nrTelAcesso, dsEmailAcesso);
 
             if (atualizado) {
-                return ResponseEntity.ok("Dados do usuário atualizados com sucesso.");
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Dados do usuário atualizados com sucesso.");
+                return ResponseEntity.ok(response);
             } else {
-                return new ResponseEntity<>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Usuário não encontrado.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
         } catch (Exception e) {
             logger.error("Erro ao atualizar usuário", e);

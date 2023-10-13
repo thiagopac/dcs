@@ -27,7 +27,6 @@ public class AcessoEnvioController {
     private EnvioService envioService;
 
     private static Logger logger = LoggerFactory.getLogger(AcessoEnvioController.class);
-    
 
     @ApiOperation(value = "Consultar empresas com envios não lidos")
     @GetMapping("/consultar-empresas-nao-lidos")
@@ -44,7 +43,6 @@ public class AcessoEnvioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
     
     @ApiOperation(value = "Listar envios por empresa")
     @GetMapping("/listar-envios-empresa")
@@ -72,9 +70,11 @@ public class AcessoEnvioController {
     @ApiOperation(value = "Mostrar dados de um envio por ID")
     @GetMapping("/mostrar-envio")
     public ResponseEntity<EnvioDTO> mostrarEnvioPorId(
-            @RequestParam(name = "idEnvio") long idEnvio) {
+            @RequestParam(name = "idEnvio") long idEnvio,
+            @RequestParam(name = "cpfCnpjAcesso") String cpfCnpjAcesso,
+            @RequestParam(name = "visao", defaultValue = "contribuinte") String visao) {
         try {
-            EnvioDTO envio = envioService.mostrarEnvioPorId(idEnvio);
+            EnvioDTO envio = envioService.mostrarEnvioPorId(idEnvio, cpfCnpjAcesso, visao);
 
             if (envio != null) {
                 return ResponseEntity.ok(envio);

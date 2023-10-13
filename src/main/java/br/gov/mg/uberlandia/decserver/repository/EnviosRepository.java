@@ -3,10 +3,13 @@ package br.gov.mg.uberlandia.decserver.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
+
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -23,5 +26,16 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
 
     @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.idEmpresa = :idEmpresa")
     Page<EnviosEntity> listarEnviosPorIdEmpresa(@Param("idEmpresa") Long idEmpresa, @Param("status") Long status, Pageable pageable);
-    
+
+    @Query("SELECT e FROM EnviosEntity e WHERE e.id = :idEnvio")
+    EnviosEntity findByIdEnvio(@Param("idEnvio") Long idEnvio);
+
+    @Modifying
+    @Query("UPDATE EnviosEntity e SET e.statusEnvio = 1, e.dsUsuAlter = :nmAcesso, e.dtUltAlter = :dataAtual WHERE e.id = :id AND :read = 1 AND e.statusEnvio = 0")
+    void atualizarStatusEnvioSeNecessario(
+            @Param("id") Long id,
+            @Param("read") int read,
+            @Param("nmAcesso") String nmAcesso,
+            @Param("dataAtual") Date dataAtual
+    );
 }
