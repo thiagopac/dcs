@@ -2,9 +2,6 @@ package br.gov.mg.uberlandia.decserver.entity;
 
 import io.swagger.annotations.ApiModel;
 import javax.persistence.*;
-
-import org.hibernate.annotations.Nationalized;
-
 import lombok.*;
 import java.util.Date;
 
@@ -61,5 +58,11 @@ public class EnviosEntity extends GenericEntity{
 
     @Column(name = "VS_VERSAO", nullable = false, length = 10)
     private Long vsVersao;
+
+    @Column(name = "NR_PROTOCOLO", nullable = true, length = 12)
+    private Long nrProtocolo;
+
+    @Column(name = "ID_SECRETARIA", nullable = true, length = 12)
+    private Long idSecretaria;
 
 }

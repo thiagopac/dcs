@@ -3,43 +3,40 @@ package br.gov.mg.uberlandia.decserver.entity.siat;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "PESSOAS", schema = "DB_PESSOA")
+@Table(name = "TBLPES", schema = "SIATUDI")
 public class PessoasEntity {
 
     @Id
-    @Column(name = "OID_PESSOAS")
-    private Long oidPessoas;
+    @Column(name = "CODPES")
+    private Long codPes;
 
-    @Column(name = "NR_CGC_CPF_PESSOA")
-    private String nrCgcCpfPessoa;
+    @Column(name = "CPFCNPJ")
+    private String cpfCnpj;
 
-    @Column(name = "DV_CGC_CPF_PESSOA")
-    private String dvCgcCpfPessoa;
+    @Column(name = "NOMRAZCOM")
+    private String nomRazCom;
 
-    @Column(name = "NM_PESSOA")
-    private String nmPessoa;
-
-    @Column(name = "DS_EMAIL")
-    private String dsEmail;
-
-    public Long getOidPessoas() {
-        return oidPessoas;
-    }
-    
-    public String getNrCgcCpfPessoa() {
-        return nrCgcCpfPessoa;
-    }
-    
-    public String getDvCgcCpfPessoa() {
-        return dvCgcCpfPessoa;
-    }
-    
-    public String getNmPessoa() {
-        return nmPessoa;
-    }
-    
-    public String getDsEmail() {
-        return dsEmail;
+    public Long getCodPes() {
+        return codPes;
     }
 
+    public void setCodPes(Long codPes) {
+        this.codPes = codPes;
+    }
+
+    public String getCpfCnpj() {
+        return cpfCnpj;
+    }
+
+    public void setCpfCnpj(String cpfCnpj) {
+        this.cpfCnpj = cpfCnpj;
+    }
+
+    public String getNomRazCom() {
+        return nomRazCom;
+    }
+
+    public void setNomRazCom(String nomRazCom) {
+        this.nomRazCom = nomRazCom;
+    }
 }

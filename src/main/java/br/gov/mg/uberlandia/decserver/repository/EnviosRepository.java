@@ -24,7 +24,7 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
            "GROUP BY e.idEmpresa, emp.oidEmpresa, emp.nmEmpresa, emp.cnpjEmpresa, emp.nrTelEmpresa, emp.dsEmailEmpresa")
     List<Object[]> countNaoLidosPorEmpresa(@Param("cpfCnpj") String cpfCnpj);
 
-    @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.idEmpresa = :idEmpresa")
+    @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.idEmpresa = :idEmpresa ORDER BY e.id DESC")
     Page<EnviosEntity> listarEnviosPorIdEmpresa(@Param("idEmpresa") Long idEmpresa, @Param("status") Long status, Pageable pageable);
 
     @Query("SELECT e FROM EnviosEntity e WHERE e.id = :idEnvio")
