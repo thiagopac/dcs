@@ -12,6 +12,13 @@ public class AcessoDTO {
     private String dsEmailAcesso;
     private Long statusAcesso;
 
+    public AcessoDTO() {};
+
+    public AcessoDTO(String nmAcesso, String cpfCnpjAcesso) {
+        this.nmAcesso = nmAcesso;
+        this.cpfCnpjAcesso = cpfCnpjAcesso;
+    }
+
     public AcessoDTO(Long oidAcesso, Long idEmpresa, String nmAcesso, String cpfCnpjAcesso, 
                      Long nrTelAcesso, String dsEmailAcesso, Long statusAcesso) {
         this.oidAcesso = oidAcesso;
@@ -21,11 +28,5 @@ public class AcessoDTO {
         this.nrTelAcesso = nrTelAcesso;
         this.dsEmailAcesso = dsEmailAcesso;
         this.statusAcesso = statusAcesso;
-    }
-
-    public AcessoDTO(String nmAcesso, String cpfCnpjAcesso, String dsEmailAcesso) {
-        this.nmAcesso = nmAcesso;
-        this.cpfCnpjAcesso = cpfCnpjAcesso;
-        this.dsEmailAcesso = dsEmailAcesso;
     }
 }

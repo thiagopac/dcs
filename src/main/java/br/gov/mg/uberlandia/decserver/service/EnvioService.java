@@ -111,6 +111,8 @@ public class EnvioService {
                     envioDTO.setDsUsuAlter(envioEntity.getDsUsuAlter());
                     envioDTO.setDtUltAlter(envioEntity.getDtUltAlter());
                     envioDTO.setVsVersao(envioEntity.getVsVersao());
+                    envioDTO.setNrProtocolo(envioEntity.getNrProtocolo());
+                    envioDTO.setIdSecretaria(envioEntity.getIdSecretaria());
                 }
 
                 return envioDTO;

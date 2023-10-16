@@ -21,25 +21,23 @@ public class SiatService {
         this.acessosRepository = acessosRepository;
     }
 
-    public void buscarEAtualizarAcesso(String nrCgcCpfPessoa, String dvCgcCpfPessoa, long nrTelAcesso, String dsEmailAcesso) {
-        PessoasEntity pessoasEntity = pessoasRepository.findByNrCgcCpfPessoaAndDvCgcCpfPessoa(nrCgcCpfPessoa, dvCgcCpfPessoa);
-
+    public void buscarEAtualizarAcesso(String cpfCnpj, long nrTelAcesso, String dsEmailAcesso) {
+        PessoasEntity pessoasEntity = pessoasRepository.findByCpfCnpj(cpfCnpj);
+    
         if (pessoasEntity != null) {
-            String cpfCnpjAcesso = nrCgcCpfPessoa + dvCgcCpfPessoa;
-
-            List<AcessosEntity> acessosEntities = acessosRepository.findByCpfCnpjAcesso(cpfCnpjAcesso);
-
+            List<AcessosEntity> acessosEntities = acessosRepository.findByCpfCnpjAcesso(cpfCnpj);
+    
             if (acessosEntities.isEmpty()) {
                 AcessosEntity acessosEntity = new AcessosEntity();
-                acessosEntity.setNmAcesso(pessoasEntity.getNmPessoa());
-                acessosEntity.setCpfCnpjAcesso(cpfCnpjAcesso);
+                acessosEntity.setNmAcesso(pessoasEntity.getNomRazCom());
+                acessosEntity.setCpfCnpjAcesso(cpfCnpj);
                 acessosEntity.setNrTelAcesso(nrTelAcesso);
                 acessosEntity.setDsEmailAcesso(dsEmailAcesso);
                 acessosEntity.setStatusAcesso(1L);
                 acessosRepository.save(acessosEntity);
             } else {
                 AcessosEntity acessosEntity = acessosEntities.get(0);
-                acessosEntity.setNmAcesso(pessoasEntity.getNmPessoa());
+                acessosEntity.setNmAcesso(pessoasEntity.getNomRazCom());
                 acessosEntity.setNrTelAcesso(nrTelAcesso);
                 acessosEntity.setDsEmailAcesso(dsEmailAcesso);
                 acessosEntity.setStatusAcesso(1L);
