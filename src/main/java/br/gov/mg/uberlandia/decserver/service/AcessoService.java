@@ -52,18 +52,16 @@ public class AcessoService {
             return null;
         }
     
-        String numeroBase = cpfCnpj.substring(0, cpfCnpj.length() - 2);
-        String dvCgcCpfPessoa = cpfCnpj.substring(cpfCnpj.length() - 2);
-    
         List<AcessosEntity> acessos = acessoRepository.findByCpfCnpjAcesso(cpfCnpj);
     
         if (!acessos.isEmpty()) {
             return null;
         }
     
-        PessoasEntity pessoa = pessoasRepository.findByNrCgcCpfPessoaAndDvCgcCpfPessoa(numeroBase, dvCgcCpfPessoa);
+        PessoasEntity pessoa = pessoasRepository.findByCpfCnpj(cpfCnpj);
+    
         if (pessoa != null) {
-            return new AcessoDTO(pessoa.getNmPessoa(), cpfCnpj, pessoa.getDsEmail());
+            return new AcessoDTO(pessoa.getNomRazCom(), cpfCnpj);
         } else {
             return "CPF/CNPJ não encontrado em nossa base de dados";
         }

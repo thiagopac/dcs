@@ -17,6 +17,8 @@ public class EnvioDTO {
     private String dsUsuAlter;
     private Date dtUltAlter;
     private Long vsVersao;
+    public Long nrProtocolo;
+    public Long idSecretaria;
 
     public EnvioDTO() {}
     
@@ -130,6 +132,22 @@ public class EnvioDTO {
 
     public void setVsVersao(Long vsVersao) {
         this.vsVersao = vsVersao;
+    }
+
+    public Long getNrProtocolo() {
+        return nrProtocolo;
+    }
+
+    public void setNrProtocolo(Long nrProtocolo) {
+        this.nrProtocolo = nrProtocolo;
+    }
+
+    public Long getIdSecretaria() {
+        return idSecretaria;
+    }
+
+    public void setIdSecretaria(Long idSecretaria) {
+        this.idSecretaria = idSecretaria;
     }
 
 }
