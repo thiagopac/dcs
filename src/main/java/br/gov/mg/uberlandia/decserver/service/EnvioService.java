@@ -3,6 +3,8 @@ package br.gov.mg.uberlandia.decserver.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
 import br.gov.mg.uberlandia.decserver.repository.AcessosRepository;
 import br.gov.mg.uberlandia.decserver.repository.EnviosRepository;
+import br.gov.mg.uberlandia.decserver.repository.RelServidoresRepository;
 
 @Service
 public class EnvioService {
@@ -25,6 +28,9 @@ public class EnvioService {
 
     @Autowired
     private AcessosRepository acessosRepository;
+
+    @Autowired
+    private RelServidoresRepository relServidoresRepository;
 
     public List<EnviosNaoLidosDTO> consultarEmpresasNaoLidosPorCpfCnpj(String cpfCnpj) {
         try {
@@ -78,17 +84,15 @@ public class EnvioService {
     }
 
     @Transactional
-    public EnvioDTO mostrarEnvioPorId(long idEnvio, String cpfCnpjAcesso, String visao) {
+    public EnvioDTO mostrarEnvioPorId(long idEnvio, String cpfCnpjAcesso) {
         try {
 
             EnviosEntity enviosEntity = enviosRepository.findByIdEnvio(idEnvio);
 
-            if (visao.equals("contribuinte")) {
-                AcessosEntity acessosEntity = acessosRepository.findByCpfCnpjAcessoAndIdEmpresa(cpfCnpjAcesso, enviosEntity.getIdEmpresa());
+            AcessosEntity acessosEntity = acessosRepository.findByCpfCnpjAcessoAndIdEmpresa(cpfCnpjAcesso, enviosEntity.getIdEmpresa());
 
-                if (acessosEntity != null) {
-                    enviosRepository.atualizarStatusEnvioSeNecessario(idEnvio, 1, acessosEntity.getNmAcesso(), new Date());
-                }
+            if (acessosEntity != null) {
+                enviosRepository.atualizarStatusEnvioSeNecessario(idEnvio, 1, acessosEntity.getNmAcesso(), new Date());
             }
 
             EnviosEntity envioEntity = enviosRepository.findById(idEnvio).orElse(null);
@@ -96,31 +100,59 @@ public class EnvioService {
             if (envioEntity != null) {
 
                 EnvioDTO envioDTO = new EnvioDTO(); 
-                    envioDTO.setOidEnvio(envioEntity.getOidEnvio());
-                    envioDTO.setDtHrEnvio(envioEntity.getDtHrEnvio());
-                    envioDTO.setDsTituloEnvio(envioEntity.getDsTituloEnvio());
-                    envioDTO.setDsComunicEnvio(envioEntity.getDsComunicEnvio());
-                    envioDTO.setStatusEnvio(envioEntity.getStatusEnvio());
-                    envioDTO.setQtDiasCiencia(envioEntity.getQtDiasCiencia());
-
-                if (visao.equals("pmu")) {
-                    envioDTO.setTpEnvio(envioEntity.getTpEnvio());
-                    envioDTO.setUsuConfigEnvio(envioEntity.getUsuConfigEnvio());
-                    envioDTO.setDtHrConfigEnvio(envioEntity.getDtHrConfigEnvio());
-                    envioDTO.setCpfCnpjEnvio(envioEntity.getCpfCnpjEnvio());
-                    envioDTO.setDsUsuAlter(envioEntity.getDsUsuAlter());
-                    envioDTO.setDtUltAlter(envioEntity.getDtUltAlter());
-                    envioDTO.setVsVersao(envioEntity.getVsVersao());
-                    envioDTO.setNrProtocolo(envioEntity.getNrProtocolo());
-                    envioDTO.setIdSecretaria(envioEntity.getIdSecretaria());
-                }
-
+                envioDTO.setOidEnvio(envioEntity.getOidEnvio());
+                envioDTO.setDtHrEnvio(envioEntity.getDtHrEnvio());
+                envioDTO.setDsTituloEnvio(envioEntity.getDsTituloEnvio());
+                envioDTO.setDsComunicEnvio(envioEntity.getDsComunicEnvio());
+                envioDTO.setStatusEnvio(envioEntity.getStatusEnvio());
+                envioDTO.setQtDiasCiencia(envioEntity.getQtDiasCiencia());
+                
                 return envioDTO;
             } else {
                 return null;
             }
         } catch (Exception e) {
             throw new ServiceException("Erro ao buscar envio por ID.", e);
+        }
+    }
+
+    public List<EnvioDTO> listarEnviosPorIdServidores(List<Long> idServidores) {
+        List<String> cpfsServidores = relServidoresRepository.findCpfByOidServidorIn(idServidores);
+        List<EnviosEntity> envios = enviosRepository.findByUsuConfigEnvioIn(cpfsServidores);
+        List<EnvioDTO> enviosDTO = envios.stream().map(this::convertToEnvioDTO).collect(Collectors.toList());
+        return enviosDTO;
+    }
+    
+    public List<EnvioDTO> listarEnviosPorIdServidor(Long idServidor) {
+        List<String> cpfServidor = relServidoresRepository.findCpfByOidServidor(idServidor);
+        List<EnviosEntity> envios = enviosRepository.findByUsuConfigEnvio(cpfServidor.get(0));
+        List<EnvioDTO> enviosDTO = envios.stream().map(this::convertToEnvioDTO).collect(Collectors.toList());
+        return enviosDTO;
+    }
+    
+
+    private EnvioDTO convertToEnvioDTO(EnviosEntity envioEntity) {
+        if (envioEntity != null) {
+            EnvioDTO envioDTO = new EnvioDTO();
+            envioDTO.setOidEnvio(envioEntity.getOidEnvio());
+            envioDTO.setDtHrEnvio(envioEntity.getDtHrEnvio());
+            envioDTO.setDsTituloEnvio(envioEntity.getDsTituloEnvio());
+            envioDTO.setDsComunicEnvio(envioEntity.getDsComunicEnvio());
+            envioDTO.setStatusEnvio(envioEntity.getStatusEnvio());
+            envioDTO.setQtDiasCiencia(envioEntity.getQtDiasCiencia());
+            envioDTO.setTpEnvio(envioEntity.getTpEnvio());
+            envioDTO.setUsuConfigEnvio(envioEntity.getUsuConfigEnvio());
+            envioDTO.setDtHrConfigEnvio(envioEntity.getDtHrConfigEnvio());
+            envioDTO.setCpfCnpjEnvio(envioEntity.getCpfCnpjEnvio());
+            envioDTO.setDsUsuAlter(envioEntity.getDsUsuAlter());
+            envioDTO.setDtUltAlter(envioEntity.getDtUltAlter());
+            envioDTO.setVsVersao(envioEntity.getVsVersao());
+            envioDTO.setNrProtocolo(envioEntity.getNrProtocolo());
+            envioDTO.setIdSecretaria(envioEntity.getIdSecretaria());
+            
+            return envioDTO;
+        } else {
+            return null;
         }
     }
 
