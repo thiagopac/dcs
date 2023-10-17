@@ -71,10 +71,9 @@ public class AcessoEnvioController {
     @GetMapping("/mostrar-envio")
     public ResponseEntity<EnvioDTO> mostrarEnvioPorId(
             @RequestParam(name = "idEnvio") long idEnvio,
-            @RequestParam(name = "cpfCnpjAcesso") String cpfCnpjAcesso,
-            @RequestParam(name = "visao", defaultValue = "contribuinte") String visao) {
+            @RequestParam(name = "cpfCnpjAcesso") String cpfCnpjAcesso) {
         try {
-            EnvioDTO envio = envioService.mostrarEnvioPorId(idEnvio, cpfCnpjAcesso, visao);
+            EnvioDTO envio = envioService.mostrarEnvioPorId(idEnvio, cpfCnpjAcesso);
 
             if (envio != null) {
                 return ResponseEntity.ok(envio);
