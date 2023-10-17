@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
+import br.gov.mg.uberlandia.decserver.entity.RelServidoresEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -38,4 +39,9 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
             @Param("nmAcesso") String nmAcesso,
             @Param("dataAtual") Date dataAtual
     );
+
+    List<EnviosEntity> findByUsuConfigEnvio(String usuConfigEnvio);
+    
+    List<EnviosEntity> findByUsuConfigEnvioIn(List<String> usuConfigEnvioList);
+
 }
