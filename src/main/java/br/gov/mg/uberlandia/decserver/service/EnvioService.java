@@ -82,7 +82,7 @@ public class EnvioService {
     }
 
     @Transactional
-    public EnvioDTO mostrarEnvioPorId(long idEnvio, String cpfCnpjAcesso) {
+    public EnvioDTO mostrarEnvioContribuintePorId(long idEnvio, String cpfCnpjAcesso) {
         try {
 
             EnviosEntity enviosEntity = enviosRepository.findByIdEnvio(idEnvio);
@@ -93,39 +93,38 @@ public class EnvioService {
                 enviosRepository.atualizarStatusEnvioSeNecessario(idEnvio, 1, acessosEntity.getNmAcesso(), new Date());
             }
 
-            EnviosEntity envioEntity = enviosRepository.findById(idEnvio).orElse(null);
-
-            if (envioEntity != null) {
-
-                EnvioDTO envioDTO = new EnvioDTO(); 
-                envioDTO.setOidEnvio(envioEntity.getOidEnvio());
-                envioDTO.setDtHrEnvio(envioEntity.getDtHrEnvio());
-                envioDTO.setDsTituloEnvio(envioEntity.getDsTituloEnvio());
-                envioDTO.setDsComunicEnvio(envioEntity.getDsComunicEnvio());
-                envioDTO.setStatusEnvio(envioEntity.getStatusEnvio());
-                envioDTO.setQtDiasCiencia(envioEntity.getQtDiasCiencia());
-                
-                return envioDTO;
-            } else {
-                return null;
-            }
+            EnvioDTO envioDTO = new EnvioDTO(); 
+            envioDTO.setOidEnvio(enviosEntity.getOidEnvio());
+            envioDTO.setDtHrEnvio(enviosEntity.getDtHrEnvio());
+            envioDTO.setDsTituloEnvio(enviosEntity.getDsTituloEnvio());
+            envioDTO.setDsComunicEnvio(enviosEntity.getDsComunicEnvio());
+            envioDTO.setStatusEnvio(enviosEntity.getStatusEnvio());
+            envioDTO.setQtDiasCiencia(enviosEntity.getQtDiasCiencia());
+            
+            return envioDTO;
         } catch (Exception e) {
             throw new ServiceException("Erro ao buscar envio por ID.", e);
         }
     }
 
-    public Page<EnvioDTO> listarEnviosPorIdServidores(List<Long> idServidores, Pageable pageable) {
+    public EnvioDTO mostrarEnvioPmuPorId(long idEnvio, String cpf) {
+        try {
+
+            EnviosEntity enviosEntity = enviosRepository.findByIdEnvio(idEnvio);
+
+            EnvioDTO envioDTO = this.convertToEnvioDTO(enviosEntity);
+            
+            return envioDTO;
+        } catch (Exception e) {
+            throw new ServiceException("Erro ao buscar envio por ID.", e);
+        }
+    }
+
+    public Page<EnvioDTO> listarEnviosPorIdServidores(List<Long> idServidores, Long status, Pageable pageable) {
         List<String> cpfsServidores = relServidoresRepository.findCpfByOidServidorIn(idServidores);
-        Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvioIn(cpfsServidores, pageable);
+        Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvioInAndStatusEnvio(cpfsServidores, status, pageable);
         return enviosPage.map(this::convertToEnvioDTO);
     }
-    
-    public Page<EnvioDTO> listarEnviosPorIdServidor(Long idServidor, Pageable pageable) {
-        List<String> cpfServidor = relServidoresRepository.findCpfByOidServidor(idServidor);
-        Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvio(cpfServidor.get(0), pageable);
-        return enviosPage.map(this::convertToEnvioDTO);
-    }
-    
 
     private EnvioDTO convertToEnvioDTO(EnviosEntity envioEntity) {
         if (envioEntity != null) {

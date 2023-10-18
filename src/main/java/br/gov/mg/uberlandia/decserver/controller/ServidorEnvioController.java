@@ -41,18 +41,17 @@ public class ServidorEnvioController {
         @RequestParam(name = "cpf") String cpf) {
         try {
             ServidorDTO servidorDTO = servidorService.encontrarServidorPorCpf(cpf);
-            if (servidorDTO != null) {
-
-                if (servidorDTO.getIdCargo() == 1) {
-                    List<ServidorDTO> servidores = servidorService.listarServidoresPorIdSecretaria(servidorDTO.getIdSecretaria());
-                    return ResponseEntity.ok(servidores);    
-                } else {
-                    List<ServidorDTO> servidorUnico = new ArrayList<>();
-                    servidorUnico.add(servidorDTO);
-                    return ResponseEntity.ok(servidorUnico);    
-                }
-            } else {
+            if (servidorDTO == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            if (servidorDTO.getIdCargo() == 1) {
+                List<ServidorDTO> servidores = servidorService.listarServidoresPorIdSecretaria(servidorDTO.getIdSecretaria());
+                return ResponseEntity.ok(servidores);    
+            } else {
+                List<ServidorDTO> servidorUnico = new ArrayList<>();
+                servidorUnico.add(servidorDTO);
+                return ResponseEntity.ok(servidorUnico);    
             }
         } catch (ServiceException e) {
             logger.error("Erro ao listar servidores da Secretaria", e);
@@ -66,38 +65,79 @@ public class ServidorEnvioController {
             @RequestParam(name = "cpf") String cpf,
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
-            @RequestParam(name = "oidServidor", required = false) Long oidServidor) {
+            @RequestParam(name = "oidServidor", required = false) Long oidServidor,
+            @RequestParam(name = "status", required = false) Long status) {
         try {
+            if (cpf == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
             ServidorDTO servidorDTO = servidorService.encontrarServidorPorCpf(cpf);
-            Page<EnvioDTO> enviosPage;
-
-            if (servidorDTO != null) {
-
-                if (servidorDTO.getIdCargo() == 1) {
-                    if (oidServidor != null) {
-                        ServidorDTO servidorPorOid = servidorService.encontrarServidorPorOidServidor(oidServidor);
-                        if (servidorPorOid.getIdSecretaria() != servidorDTO.getIdSecretaria()) {
-                            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-                        }else{
-                            enviosPage = envioService.listarEnviosPorIdServidor(oidServidor, PageRequest.of(page, size));
-                        }
-                    } else {
-                        List<ServidorDTO> servidores = servidorService.listarServidoresPorIdSecretaria(servidorDTO.getIdSecretaria());
-                        List<Long> idServidores = servidores.stream().map(ServidorDTO::getOidServidor).collect(Collectors.toList());
-                        enviosPage = envioService.listarEnviosPorIdServidores(idServidores, PageRequest.of(page, size));
-                    }
-                } else {
-                    enviosPage = envioService.listarEnviosPorIdServidor(servidorDTO.getOidServidor(), PageRequest.of(page, size));
-                }
-
-                return ResponseEntity.ok(enviosPage);
-            } else {
+            if (servidorDTO == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
+
+            List<Long> idServidores = new ArrayList<>();
+            if (servidorDTO.getIdCargo() == 1) {
+                if (oidServidor != null) {
+                    ServidorDTO servidorPorOid = servidorService.encontrarServidorPorOidServidor(oidServidor);
+                    if (servidorPorOid.getIdSecretaria() != servidorDTO.getIdSecretaria()) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                    } else {
+                        idServidores.add(oidServidor);
+                    }
+                } else {
+                    List<ServidorDTO> servidores = servidorService.listarServidoresPorIdSecretaria(servidorDTO.getIdSecretaria());
+                    idServidores = servidores.stream().map(ServidorDTO::getOidServidor).collect(Collectors.toList());
+                }
+            } else {
+                idServidores.add(servidorDTO.getOidServidor());
+            }
+
+            if (idServidores.isEmpty()) {
+                return ResponseEntity.ok(Page.empty());
+            }
+
+            return ResponseEntity.ok(envioService.listarEnviosPorIdServidores(idServidores, status, PageRequest.of(page, size)));
         } catch (ServiceException e) {
             logger.error("Erro ao listar envios de servidores", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @ApiOperation(value = "Mostrar dados de um envio por ID")
+    @GetMapping("/mostrar-envio")
+    public ResponseEntity<EnvioDTO> mostrarEnvioPorId(
+            @RequestParam(name = "idEnvio") long idEnvio,
+            @RequestParam(name = "cpf") String cpf) {
+        try {
+
+            if (cpf == null || cpf.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            ServidorDTO servidorDTO = servidorService.encontrarServidorPorCpf(cpf);
+
+            if (servidorDTO == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            EnvioDTO envio = envioService.mostrarEnvioPmuPorId(idEnvio, cpf);
+
+            if (envio != null) {
+                return ResponseEntity.ok(envio);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+            
+        } catch (ServiceException e) {
+            logger.error("Erro ao mostrar envio por ID", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (Exception e) {
+            logger.error("Erro inesperado ao mostrar envio por ID", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
 }

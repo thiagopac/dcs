@@ -37,6 +37,7 @@ public class AcessoUsuarioController {
             }
             return ResponseEntity.ok(empresasDTOList);
         } catch (Exception e) {
+            logger.error("Consultar empresas por CPF ou CNPJ do usuário", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -72,7 +73,12 @@ public class AcessoUsuarioController {
             long nrTelAcesso = atualizacaoAcessoDTO.getNrTelAcesso();
             String dsEmailAcesso = atualizacaoAcessoDTO.getDsEmailAcesso();
 
-            // boolean atualizado = acessoService.atualizarUsuario(cpfCnpjAcesso, nmAcesso, nrTelAcesso, dsEmailAcesso);
+            if (cpfCnpjAcesso == null || nmAcesso == null || nrTelAcesso == 0 || dsEmailAcesso == null) {
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Dados inválidos.");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
             boolean atualizado = acessoService.insertAcesso(cpfCnpjAcesso, nmAcesso, nrTelAcesso, dsEmailAcesso);
 
             if (atualizado) {
