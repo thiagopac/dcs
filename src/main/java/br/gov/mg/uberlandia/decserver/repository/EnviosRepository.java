@@ -38,10 +38,8 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
             @Param("dataAtual") Date dataAtual
     );
 
-    
     @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.usuConfigEnvio = :usuConfigEnvio")
     Page<EnviosEntity> findByUsuConfigEnvioAndStatusEnvio(@Param("usuConfigEnvio") String usuConfigEnvio, @Param("status") Long status, Pageable pageable);
-
     
     @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.usuConfigEnvio IN :usuConfigEnvioList")
     Page<EnviosEntity> findByUsuConfigEnvioInAndStatusEnvio(@Param("usuConfigEnvioList") List<String> usuConfigEnvioList, @Param("status") Long status, Pageable pageable);
