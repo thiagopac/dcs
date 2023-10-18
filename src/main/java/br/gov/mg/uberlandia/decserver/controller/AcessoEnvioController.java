@@ -73,7 +73,12 @@ public class AcessoEnvioController {
             @RequestParam(name = "idEnvio") long idEnvio,
             @RequestParam(name = "cpfCnpjAcesso") String cpfCnpjAcesso) {
         try {
-            EnvioDTO envio = envioService.mostrarEnvioPorId(idEnvio, cpfCnpjAcesso);
+
+            if (cpfCnpjAcesso == null || cpfCnpjAcesso.isEmpty() || idEnvio <= 0) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            EnvioDTO envio = envioService.mostrarEnvioContribuintePorId(idEnvio, cpfCnpjAcesso);
 
             if (envio != null) {
                 return ResponseEntity.ok(envio);
