@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface RelServidoresRepository extends JpaRepository<RelServidoresEntity, Long> {
     
+    RelServidoresEntity findByOidServidor(Long oidServidor);
+
     List<RelServidoresEntity> findByNrCpfServidor(String cpf);
 
     List<RelServidoresEntity> findByIdSecretaria(Long idSecretaria);

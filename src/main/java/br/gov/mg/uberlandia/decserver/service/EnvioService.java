@@ -3,8 +3,6 @@ package br.gov.mg.uberlandia.decserver.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -116,18 +114,16 @@ public class EnvioService {
         }
     }
 
-    public List<EnvioDTO> listarEnviosPorIdServidores(List<Long> idServidores) {
+    public Page<EnvioDTO> listarEnviosPorIdServidores(List<Long> idServidores, Pageable pageable) {
         List<String> cpfsServidores = relServidoresRepository.findCpfByOidServidorIn(idServidores);
-        List<EnviosEntity> envios = enviosRepository.findByUsuConfigEnvioIn(cpfsServidores);
-        List<EnvioDTO> enviosDTO = envios.stream().map(this::convertToEnvioDTO).collect(Collectors.toList());
-        return enviosDTO;
+        Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvioIn(cpfsServidores, pageable);
+        return enviosPage.map(this::convertToEnvioDTO);
     }
     
-    public List<EnvioDTO> listarEnviosPorIdServidor(Long idServidor) {
+    public Page<EnvioDTO> listarEnviosPorIdServidor(Long idServidor, Pageable pageable) {
         List<String> cpfServidor = relServidoresRepository.findCpfByOidServidor(idServidor);
-        List<EnviosEntity> envios = enviosRepository.findByUsuConfigEnvio(cpfServidor.get(0));
-        List<EnvioDTO> enviosDTO = envios.stream().map(this::convertToEnvioDTO).collect(Collectors.toList());
-        return enviosDTO;
+        Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvio(cpfServidor.get(0), pageable);
+        return enviosPage.map(this::convertToEnvioDTO);
     }
     
 

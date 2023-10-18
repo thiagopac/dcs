@@ -14,6 +14,23 @@ public class ServidorService {
     @Autowired
     private RelServidoresRepository relServidoresRepository;
 
+    public ServidorDTO encontrarServidorPorOidServidor(Long oidSevidor) {
+
+        RelServidoresEntity servidorEntity = relServidoresRepository.findByOidServidor(oidSevidor);
+        
+        if (servidorEntity != null) {
+            ServidorDTO servidorDTO = new ServidorDTO();
+            servidorDTO.setIdSecretaria(servidorEntity.getIdSecretaria());
+            servidorDTO.setOidServidor(servidorEntity.getOidServidor());
+            servidorDTO.setNrCpfServidor(servidorEntity.getNrCpfServidor());
+            servidorDTO.setNmServidor(servidorEntity.getNmServidor());
+            servidorDTO.setIdCargo(servidorEntity.getIdCargo());
+            return servidorDTO;
+        } else {
+            return null;
+        }
+    }
+
     public ServidorDTO encontrarServidorPorCpf(String cpf) {
 
         List<RelServidoresEntity> servidoresEntity = relServidoresRepository.findByNrCpfServidor(cpf);
