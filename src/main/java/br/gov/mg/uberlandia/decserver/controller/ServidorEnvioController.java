@@ -8,6 +8,8 @@ import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -60,20 +62,35 @@ public class ServidorEnvioController {
 
     @ApiOperation(value = "Listar envios de servidores")
     @GetMapping("/listar-envios-servidor")
-    public ResponseEntity<List<EnvioDTO>> listarEnviosDeServidorPorCpf(
-            @RequestParam(name = "cpf") String cpf) {
+    public ResponseEntity<Page<EnvioDTO>> listarEnviosDeServidorPorCpf(
+            @RequestParam(name = "cpf") String cpf,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "oidServidor", required = false) Long oidServidor) {
         try {
             ServidorDTO servidorDTO = servidorService.encontrarServidorPorCpf(cpf);
+            Page<EnvioDTO> enviosPage;
+
             if (servidorDTO != null) {
+
                 if (servidorDTO.getIdCargo() == 1) {
-                    List<ServidorDTO> servidores = servidorService.listarServidoresPorIdSecretaria(servidorDTO.getIdSecretaria());
-                    List<Long> idServidores = servidores.stream().map(ServidorDTO::getOidServidor).collect(Collectors.toList());
-                    List<EnvioDTO> envios = envioService.listarEnviosPorIdServidores(idServidores);
-                    return ResponseEntity.ok(envios);
+                    if (oidServidor != null) {
+                        ServidorDTO servidorPorOid = servidorService.encontrarServidorPorOidServidor(oidServidor);
+                        if (servidorPorOid.getIdSecretaria() != servidorDTO.getIdSecretaria()) {
+                            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                        }else{
+                            enviosPage = envioService.listarEnviosPorIdServidor(oidServidor, PageRequest.of(page, size));
+                        }
+                    } else {
+                        List<ServidorDTO> servidores = servidorService.listarServidoresPorIdSecretaria(servidorDTO.getIdSecretaria());
+                        List<Long> idServidores = servidores.stream().map(ServidorDTO::getOidServidor).collect(Collectors.toList());
+                        enviosPage = envioService.listarEnviosPorIdServidores(idServidores, PageRequest.of(page, size));
+                    }
                 } else {
-                    List<EnvioDTO> envios = envioService.listarEnviosPorIdServidor(servidorDTO.getOidServidor());
-                    return ResponseEntity.ok(envios);
+                    enviosPage = envioService.listarEnviosPorIdServidor(servidorDTO.getOidServidor(), PageRequest.of(page, size));
                 }
+
+                return ResponseEntity.ok(enviosPage);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
@@ -82,6 +99,5 @@ public class ServidorEnvioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 
 }
