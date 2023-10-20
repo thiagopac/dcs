@@ -14,16 +14,24 @@ import java.util.List;
 @Repository
 public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
 
-    @Query("SELECT e.idEmpresa AS idEmpresa, emp.oidEmpresa AS OID_EMPRESA, emp.nmEmpresa AS NM_EMPRESA, emp.cnpjEmpresa AS CNPJ_EMPRESA, emp.nrTelEmpresa AS NR_TEL_EMPRESA, emp.dsEmailEmpresa AS DS_EMAIL_EMPRESA, COUNT(e) AS quantidadeNaoLidos " +
-           "FROM EnviosEntity e " +
-           "JOIN AcessosEntity a ON e.idEmpresa = a.idEmpresa " +
-           "JOIN EmpresasEntity emp ON a.idEmpresa = emp.oidEmpresa " +
-           "WHERE a.cpfCnpjAcesso = :cpfCnpj " +
-           "AND e.statusEnvio = 0 " +
-           "GROUP BY e.idEmpresa, emp.oidEmpresa, emp.nmEmpresa, emp.cnpjEmpresa, emp.nrTelEmpresa, emp.dsEmailEmpresa")
-    List<Object[]> countNaoLidosPorEmpresa(@Param("cpfCnpj") String cpfCnpj);
+    @Query("SELECT COUNT(e) FROM EnviosEntity e WHERE e.statusEnvio = 0 AND e.tpEnvio = 0")
+    Long countTotalMassNaoLidos();
 
-    @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.idEmpresa = :idEmpresa ORDER BY e.id DESC")
+    @Query("SELECT e.idEmpresa AS idEmpresa, emp.oidEmpresa AS OID_EMPRESA, emp.nmEmpresa AS NM_EMPRESA, emp.cnpjEmpresa AS CNPJ_EMPRESA, emp.nrTelEmpresa AS NR_TEL_EMPRESA, emp.dsEmailEmpresa AS DS_EMAIL_EMPRESA, COUNT(e) AS quantidadeNaoLidos " +
+       "FROM EnviosEntity e " +
+       "JOIN AcessosEntity a ON e.idEmpresa = a.idEmpresa " +
+       "JOIN EmpresasEntity emp ON a.idEmpresa = emp.oidEmpresa " +
+       "WHERE a.cpfCnpjAcesso = :cpfCnpj " +
+       "AND emp.oidEmpresa = :oidEmpresa " +
+       "AND e.statusEnvio = 0 " +
+       "GROUP BY e.idEmpresa, emp.oidEmpresa, emp.nmEmpresa, emp.cnpjEmpresa, emp.nrTelEmpresa, emp.dsEmailEmpresa")
+    List<Object[]> countNaoLidosPorEmpresa(@Param("cpfCnpj") String cpfCnpj, @Param("oidEmpresa") Long oidEmpresa);
+
+    @Query("SELECT e FROM EnviosEntity e " +
+           "WHERE (:status IS NULL OR e.statusEnvio = :status) " +
+           "AND (e.idEmpresa = :idEmpresa OR e.idEmpresa = 0) " +
+           "AND (e.tpEnvio = 1 OR e.tpEnvio = 0) " +
+           "ORDER BY e.id DESC")
     Page<EnviosEntity> listarEnviosPorIdEmpresa(@Param("idEmpresa") Long idEmpresa, @Param("status") Long status, Pageable pageable);
 
     @Query("SELECT e FROM EnviosEntity e WHERE e.id = :idEnvio")

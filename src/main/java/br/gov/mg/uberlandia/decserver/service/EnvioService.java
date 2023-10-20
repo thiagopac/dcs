@@ -2,7 +2,9 @@ package br.gov.mg.uberlandia.decserver.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnvioDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnviosNaoLidosDTO;
 import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
@@ -22,6 +26,9 @@ import br.gov.mg.uberlandia.decserver.repository.RelServidoresRepository;
 public class EnvioService {
 
     @Autowired
+    private AcessoService acessoService;
+
+    @Autowired
     private EnviosRepository enviosRepository;
 
     @Autowired
@@ -32,22 +39,38 @@ public class EnvioService {
 
     public List<EnviosNaoLidosDTO> consultarEmpresasNaoLidosPorCpfCnpj(String cpfCnpj) {
         try {
-            List<Object[]> resultados = enviosRepository.countNaoLidosPorEmpresa(cpfCnpj);
+            List<EmpresaDTO> empresasAcesso = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
+            Long totalMassNaoLidos = enviosRepository.countTotalMassNaoLidos();
             List<EnviosNaoLidosDTO> empresasNaoLidos = new ArrayList<>();
+            Set<Long> empresasContabilizadas = new HashSet<>();
 
-            for (Object[] resultado : resultados) {
-                Long idEmpresa = (Long) resultado[0];
-                Long oidEmpresa = (Long) resultado[1];
-                String nomeEmpresa = (String) resultado[2];
-                String cnpjEmpresa = (String) resultado[3];
-                Long nrTelEmpresa = (Long) resultado[4];
-                String dsEmailEmpresa = (String) resultado[5];
-                Long quantidadeNaoLidos = (Long) resultado[6];
+            for (EmpresaDTO empresa : empresasAcesso) {
+                Long oidEmpresa = empresa.getOidEmpresa();
+                List<Object[]> resultados = enviosRepository.countNaoLidosPorEmpresa(cpfCnpj, oidEmpresa);
+                
+                for (Object[] resultado : resultados) {
+                    Long idEmpresa = (Long) resultado[0];
+                    Long quantidadeNaoLidos = (Long) resultado[6] + totalMassNaoLidos;
+                    
+                    if (quantidadeNaoLidos > 0) {
 
-                empresasNaoLidos.add(new EnviosNaoLidosDTO(idEmpresa, oidEmpresa, nomeEmpresa, cnpjEmpresa, nrTelEmpresa, dsEmailEmpresa, quantidadeNaoLidos));
+                        empresasNaoLidos.add(new EnviosNaoLidosDTO(idEmpresa, oidEmpresa, empresa.getNmEmpresa(), empresa.getCnpjEmpresa(), empresa.getNrTelEmpresa(), empresa.getDsEmailEmpresa(), quantidadeNaoLidos));
+                        empresasContabilizadas.add(oidEmpresa);
+                    }
+                }
+            }
+
+            for (EmpresaDTO empresa : empresasAcesso) {
+                Long oidEmpresa = empresa.getOidEmpresa();
+                if (!empresasContabilizadas.contains(oidEmpresa)) {
+                    if (totalMassNaoLidos > 0) {
+                        empresasNaoLidos.add(new EnviosNaoLidosDTO(null, oidEmpresa, empresa.getNmEmpresa(), empresa.getCnpjEmpresa(), empresa.getNrTelEmpresa(), empresa.getDsEmailEmpresa(), totalMassNaoLidos));
+                    }
+                }
             }
 
             return empresasNaoLidos;
+
         } catch (Exception e) {
             throw new ServiceException("Erro ao consultar empresas com envios não lidos.", e);
         }
@@ -89,7 +112,7 @@ public class EnvioService {
 
             AcessosEntity acessosEntity = acessosRepository.findByCpfCnpjAcessoAndIdEmpresa(cpfCnpjAcesso, enviosEntity.getIdEmpresa());
 
-            if (acessosEntity != null) {
+            if (acessosEntity != null && enviosEntity.getTpEnvio() == 1) {
                 enviosRepository.atualizarStatusEnvioSeNecessario(idEnvio, 1, acessosEntity.getNmAcesso(), new Date());
             }
 
