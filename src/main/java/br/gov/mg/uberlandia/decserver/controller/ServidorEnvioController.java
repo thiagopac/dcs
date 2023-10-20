@@ -3,7 +3,6 @@ package br.gov.mg.uberlandia.decserver.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +12,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import br.gov.mg.uberlandia.decserver.dto.EnvioDTO;
 import br.gov.mg.uberlandia.decserver.dto.ServidorDTO;
 import br.gov.mg.uberlandia.decserver.service.EnvioService;
@@ -135,6 +135,19 @@ public class ServidorEnvioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         } catch (Exception e) {
             logger.error("Erro inesperado ao mostrar envio por ID", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @ApiOperation(value = "Criar um novo envio")
+    @PostMapping("/criar-envio")
+    public ResponseEntity<EnvioDTO> criarEnvio(@RequestBody EnvioDTO novoEnvioDTO) {
+        try {
+            EnvioDTO envioCriado = envioService.criarEnvio(novoEnvioDTO);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(envioCriado);
+        } catch (ServiceException e) {
+            logger.error("Erro ao criar envio", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

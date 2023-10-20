@@ -109,9 +109,7 @@ public class EnvioService {
 
     public EnvioDTO mostrarEnvioPmuPorId(long idEnvio, String cpf) {
         try {
-
             EnviosEntity enviosEntity = enviosRepository.findByIdEnvio(idEnvio);
-
             EnvioDTO envioDTO = this.convertToEnvioDTO(enviosEntity);
             
             return envioDTO;
@@ -148,6 +146,34 @@ public class EnvioService {
             return envioDTO;
         } else {
             return null;
+        }
+    }
+
+    @Transactional
+    public EnvioDTO criarEnvio(EnvioDTO novoEnvioDTO) {
+        try {
+            EnviosEntity envioEntity = new EnviosEntity();
+            envioEntity.setDtHrEnvio(new Date());
+            envioEntity.setDsTituloEnvio(novoEnvioDTO.getDsTituloEnvio());
+            envioEntity.setDsComunicEnvio(novoEnvioDTO.getDsComunicEnvio());
+            envioEntity.setStatusEnvio(novoEnvioDTO.getStatusEnvio());
+            envioEntity.setQtDiasCiencia(novoEnvioDTO.getQtDiasCiencia());
+            envioEntity.setTpEnvio(novoEnvioDTO.getTpEnvio());
+            envioEntity.setUsuConfigEnvio(novoEnvioDTO.getUsuConfigEnvio());
+            envioEntity.setDtHrConfigEnvio(novoEnvioDTO.getDtHrConfigEnvio());
+            envioEntity.setCpfCnpjEnvio(novoEnvioDTO.getCpfCnpjEnvio());
+            envioEntity.setDsUsuAlter(novoEnvioDTO.getDsUsuAlter());
+            envioEntity.setDtUltAlter(novoEnvioDTO.getDtUltAlter());
+            envioEntity.setVsVersao(novoEnvioDTO.getVsVersao());
+            envioEntity.setNrProtocolo(novoEnvioDTO.getNrProtocolo());
+            envioEntity.setIdSecretaria(novoEnvioDTO.getIdSecretaria());
+            envioEntity.setIdEmpresa(novoEnvioDTO.getIdEmpresa());
+            
+            envioEntity = enviosRepository.save(envioEntity);
+            
+            return convertToEnvioDTO(envioEntity);
+        } catch (Exception e) {
+            throw new ServiceException("Erro ao criar envio.", e);
         }
     }
 
