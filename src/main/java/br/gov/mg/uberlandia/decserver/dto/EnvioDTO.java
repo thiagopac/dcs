@@ -19,6 +19,7 @@ public class EnvioDTO {
     private Long vsVersao;
     public Long nrProtocolo;
     public Long idSecretaria;
+    public String cpfServidor;
 
     public EnvioDTO() {}
     
@@ -148,6 +149,14 @@ public class EnvioDTO {
 
     public void setIdSecretaria(Long idSecretaria) {
         this.idSecretaria = idSecretaria;
+    }
+
+    public String getCpfServidor() {
+        return cpfServidor;
+    }
+
+    public void setCpfServidor(String cpfServidor) {
+        this.cpfServidor = cpfServidor;
     }
 
 }
