@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import br.gov.mg.uberlandia.decserver.dto.EnvioDTO;
+import br.gov.mg.uberlandia.decserver.dto.ErrorMessage;
 import br.gov.mg.uberlandia.decserver.dto.ServidorDTO;
 import br.gov.mg.uberlandia.decserver.service.EnvioService;
 import br.gov.mg.uberlandia.decserver.service.ServidorService;
@@ -141,14 +142,16 @@ public class ServidorEnvioController {
 
     @ApiOperation(value = "Criar um novo envio")
     @PostMapping("/criar-envio")
-    public ResponseEntity<EnvioDTO> criarEnvio(@RequestBody EnvioDTO novoEnvioDTO) {
+    public ResponseEntity<?> criarEnvio(@RequestBody EnvioDTO novoEnvioDTO) {
         try {
             EnvioDTO envioCriado = envioService.criarEnvio(novoEnvioDTO);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(envioCriado);
         } catch (ServiceException e) {
             logger.error("Erro ao criar envio", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            
+            ErrorMessage errorMessage = new ErrorMessage("INTERNAL_SERVER_ERROR", "Erro interno do servidor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
 

@@ -33,10 +33,9 @@ public class ServidorService {
 
     public ServidorDTO encontrarServidorPorCpf(String cpf) {
 
-        List<RelServidoresEntity> servidoresEntity = relServidoresRepository.findByNrCpfServidor(cpf);
+        RelServidoresEntity servidorEntity = relServidoresRepository.findByNrCpfServidor(cpf);
         
-        if (!servidoresEntity.isEmpty()) {
-            RelServidoresEntity servidorEntity = servidoresEntity.get(0);
+        if (servidorEntity != null) {
             ServidorDTO servidorDTO = new ServidorDTO();
             servidorDTO.setIdSecretaria(servidorEntity.getIdSecretaria());
             servidorDTO.setOidServidor(servidorEntity.getOidServidor());

@@ -12,4 +12,8 @@ public interface EmpresasRepository extends JpaRepository<AcessosEntity, Long> {
        "INNER JOIN AcessosEntity a ON e.oidEmpresa = a.idEmpresa " +
        "WHERE a.cpfCnpjAcesso = :cpfCnpj")
     List<EmpresasEntity> findEmpresasByCpfCnpjAcesso(@Param("cpfCnpj") String cpfCnpj);
+
+    @Query("SELECT e FROM EmpresasEntity e WHERE e.cnpjEmpresa = :cpfCnpj")
+    EmpresasEntity findByCpfCnpjEmpresa(@Param("cpfCnpj") String cpfCnpj);
+    
 }
