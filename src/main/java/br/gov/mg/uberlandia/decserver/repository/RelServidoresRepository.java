@@ -9,8 +9,8 @@ public interface RelServidoresRepository extends JpaRepository<RelServidoresEnti
     
     RelServidoresEntity findByOidServidor(Long oidServidor);
 
-    List<RelServidoresEntity> findByNrCpfServidor(String cpf);
-
+    RelServidoresEntity findByNrCpfServidor(String cpf);
+    
     List<RelServidoresEntity> findByIdSecretaria(Long idSecretaria);
 
     @Query("SELECT r.nrCpfServidor FROM RelServidoresEntity r WHERE r.oidServidor IN :oidServidores")

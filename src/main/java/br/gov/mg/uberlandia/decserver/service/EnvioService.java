@@ -10,15 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnvioDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnviosNaoLidosDTO;
+import br.gov.mg.uberlandia.decserver.dto.ServidorDTO;
 import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
+import br.gov.mg.uberlandia.decserver.entity.EmpresasEntity;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
+import br.gov.mg.uberlandia.decserver.entity.RelServidoresEntity;
 import br.gov.mg.uberlandia.decserver.repository.AcessosRepository;
+import br.gov.mg.uberlandia.decserver.repository.EmpresasRepository;
 import br.gov.mg.uberlandia.decserver.repository.EnviosRepository;
 import br.gov.mg.uberlandia.decserver.repository.RelServidoresRepository;
 
@@ -36,6 +41,9 @@ public class EnvioService {
 
     @Autowired
     private RelServidoresRepository relServidoresRepository;
+
+    @Autowired
+    private EmpresasRepository empresasRepository;
 
     public List<EnviosNaoLidosDTO> consultarEmpresasNaoLidosPorCpfCnpj(String cpfCnpj) {
         try {
@@ -175,29 +183,50 @@ public class EnvioService {
     @Transactional
     public EnvioDTO criarEnvio(EnvioDTO novoEnvioDTO) {
         try {
+
+            String cpfCnpjEnvio = novoEnvioDTO.getCpfCnpjEnvio();
+            EmpresasEntity empresa = new EmpresasEntity();
+
+            if (cpfCnpjEnvio != null && !cpfCnpjEnvio.equals("0")) {
+                empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvio);
+                if (empresa == null) {
+                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvio);
+                }
+            } else {
+                empresa = new EmpresasEntity();
+                empresa.setOidEmpresa(0L);
+            }
+
+            String cpfServidor = novoEnvioDTO.getCpfServidor();
+            RelServidoresEntity servidor = relServidoresRepository.findByNrCpfServidor(cpfServidor);
+            if (servidor == null) {
+                throw new RuntimeException("Servidor não encontrado com o CPF fornecido: " + cpfServidor);
+            }
+
             EnviosEntity envioEntity = new EnviosEntity();
             envioEntity.setDtHrEnvio(new Date());
             envioEntity.setDsTituloEnvio(novoEnvioDTO.getDsTituloEnvio());
             envioEntity.setDsComunicEnvio(novoEnvioDTO.getDsComunicEnvio());
-            envioEntity.setStatusEnvio(novoEnvioDTO.getStatusEnvio());
+            envioEntity.setStatusEnvio(0L);
             envioEntity.setQtDiasCiencia(novoEnvioDTO.getQtDiasCiencia());
             envioEntity.setTpEnvio(novoEnvioDTO.getTpEnvio());
-            envioEntity.setUsuConfigEnvio(novoEnvioDTO.getUsuConfigEnvio());
+            envioEntity.setUsuConfigEnvio(servidor.getNrCpfServidor());
             envioEntity.setDtHrConfigEnvio(novoEnvioDTO.getDtHrConfigEnvio());
             envioEntity.setCpfCnpjEnvio(novoEnvioDTO.getCpfCnpjEnvio());
-            envioEntity.setDsUsuAlter(novoEnvioDTO.getDsUsuAlter());
-            envioEntity.setDtUltAlter(novoEnvioDTO.getDtUltAlter());
-            envioEntity.setVsVersao(novoEnvioDTO.getVsVersao());
+            envioEntity.setDsUsuAlter(servidor.getNmServidor());
+            envioEntity.setDtUltAlter(new Date());
+            envioEntity.setVsVersao(1L);
             envioEntity.setNrProtocolo(novoEnvioDTO.getNrProtocolo());
-            envioEntity.setIdSecretaria(novoEnvioDTO.getIdSecretaria());
-            envioEntity.setIdEmpresa(novoEnvioDTO.getIdEmpresa());
-            
+            envioEntity.setIdSecretaria(servidor.getIdSecretaria());
+            envioEntity.setIdEmpresa(empresa.getOidEmpresa());
+
             envioEntity = enviosRepository.save(envioEntity);
-            
+
             return convertToEnvioDTO(envioEntity);
         } catch (Exception e) {
-            throw new ServiceException("Erro ao criar envio.", e);
+            throw new RuntimeException("Erro ao criar envio.", e);
         }
     }
+
 
 }
