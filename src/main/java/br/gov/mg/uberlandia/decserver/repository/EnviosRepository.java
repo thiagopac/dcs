@@ -51,4 +51,5 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
     
     @Query("SELECT e FROM EnviosEntity e WHERE (:status IS NULL OR e.statusEnvio = :status) AND e.usuConfigEnvio IN :usuConfigEnvioList")
     Page<EnviosEntity> findByUsuConfigEnvioInAndStatusEnvio(@Param("usuConfigEnvioList") List<String> usuConfigEnvioList, @Param("status") Long status, Pageable pageable);
+
 }

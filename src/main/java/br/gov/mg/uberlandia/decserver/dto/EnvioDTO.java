@@ -12,8 +12,9 @@ public class EnvioDTO {
     private String dsComunicEnvio;
     private String usuConfigEnvio;
     private Date dtHrConfigEnvio;
-    private String cpfCnpjEnvio;
+    private Long cpfCnpjEnvio;
     private Long statusEnvio;
+    private Long situacEnvio;
     private String dsUsuAlter;
     private Date dtUltAlter;
     private Long vsVersao;
@@ -95,11 +96,11 @@ public class EnvioDTO {
         this.dtHrConfigEnvio = dtHrConfigEnvio;
     }
 
-    public String getCpfCnpjEnvio() {
+    public Long getCpfCnpjEnvio() {
         return cpfCnpjEnvio;
     }
 
-    public void setCpfCnpjEnvio(String cpfCnpjEnvio) {
+    public void setCpfCnpjEnvio(Long cpfCnpjEnvio) {
         this.cpfCnpjEnvio = cpfCnpjEnvio;
     }
 
@@ -109,6 +110,14 @@ public class EnvioDTO {
 
     public void setStatusEnvio(Long statusEnvio) {
         this.statusEnvio = statusEnvio;
+    }
+
+    public Long getSituacEnvio() {
+        return situacEnvio;
+    }
+    
+    public void setSituacEnvio(Long situacEnvio) {
+        this.situacEnvio = situacEnvio;
     }
 
     public String getDsUsuAlter() {

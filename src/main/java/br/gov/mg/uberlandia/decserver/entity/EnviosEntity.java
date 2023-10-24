@@ -44,7 +44,7 @@ public class EnviosEntity extends GenericEntity{
     private Date dtHrConfigEnvio;
 
     @Column(name = "CPF_CNPJ_ENVIO", nullable = false, length = 15)
-    private String cpfCnpjEnvio;
+    private Long cpfCnpjEnvio;
 
     @Column(name = "STATUS_ENVIO", nullable = false, length = 1)
     private Long statusEnvio;

@@ -30,8 +30,10 @@ public class AcessoService {
         if (cpfCnpj == null || cpfCnpj.isEmpty()) {
             throw new IllegalArgumentException("CPF/CNPJ não pode ser nulo ou vazio");
         }
+
+        Long cpfCnpjLong = Long.parseLong(cpfCnpj);
     
-        List<EmpresasEntity> empresasList = empresasRepository.findEmpresasByCpfCnpjAcesso(cpfCnpj);
+        List<EmpresasEntity> empresasList = empresasRepository.findEmpresasByCpfCnpjAcesso(cpfCnpjLong);
     
         List<EmpresaDTO> empresasDTOList = new ArrayList<>();
         for (EmpresasEntity empresaEntity : empresasList) {
@@ -51,8 +53,10 @@ public class AcessoService {
         if (cpfCnpj == null || cpfCnpj.length() < 2) {
             return null;
         }
+
+        Long cpfCnpjLong = Long.parseLong(cpfCnpj);
     
-        List<AcessosEntity> acessos = acessoRepository.findByCpfCnpjAcesso(cpfCnpj);
+        List<AcessosEntity> acessos = acessoRepository.findByCpfCnpjAcesso(cpfCnpjLong);
     
         if (!acessos.isEmpty()) {
             return null;
@@ -61,7 +65,7 @@ public class AcessoService {
         PessoasEntity pessoa = pessoasRepository.findByCpfCnpj(cpfCnpj);
     
         if (pessoa != null) {
-            return new AcessoDTO(pessoa.getNomRazCom(), cpfCnpj);
+            return new AcessoDTO(pessoa.getNomRazCom(), cpfCnpjLong);
         } else {
             return "CPF/CNPJ não encontrado em nossa base de dados";
         }
@@ -81,13 +85,15 @@ public class AcessoService {
             return false;
         }
 
-        int rowsUpdated = acessoRepository.updateNmTelAndEmailByCpfCnpjAcesso(cpfCnpj, nmAcesso, nrTelAcesso, dsEmailAcesso);
+        Long cpfCnpjLong = Long.parseLong(cpfCnpj);
+
+        int rowsUpdated = acessoRepository.updateNmTelAndEmailByCpfCnpjAcesso(cpfCnpjLong, nmAcesso, nrTelAcesso, dsEmailAcesso);
 
         return rowsUpdated > 0;
     }
 
     @Transactional
-    public boolean insertAcesso(String cpfCnpj, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
+    public boolean insertAcesso(Long cpfCnpj, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
         try {
             if (cpfCnpj == null || nmAcesso == null || dsEmailAcesso == null) {
                 return false;
@@ -100,7 +106,7 @@ public class AcessoService {
             acesso.setDsEmailAcesso(dsEmailAcesso);
             acesso.setIdEmpresa(0L);
             acesso.setStatusAcesso(1L);
-            acesso.setDsUsuAlter(cpfCnpj);
+            acesso.setDsUsuAlter(String.valueOf(cpfCnpj));
 
             acessoRepository.save(acesso);
 
