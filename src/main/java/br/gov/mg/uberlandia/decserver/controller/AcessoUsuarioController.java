@@ -68,7 +68,7 @@ public class AcessoUsuarioController {
     public ResponseEntity<Map<String, String>> atualizarUsuarioPorCpfCnpj(
             @RequestBody AtualizacaoAcessoDTO atualizacaoAcessoDTO) {
         try {
-            String cpfCnpjAcesso = atualizacaoAcessoDTO.getCpfCnpjAcesso();
+            Long cpfCnpjAcesso = atualizacaoAcessoDTO.getCpfCnpjAcesso();
             String nmAcesso = atualizacaoAcessoDTO.getNmAcesso();
             long nrTelAcesso = atualizacaoAcessoDTO.getNrTelAcesso();
             String dsEmailAcesso = atualizacaoAcessoDTO.getDsEmailAcesso();

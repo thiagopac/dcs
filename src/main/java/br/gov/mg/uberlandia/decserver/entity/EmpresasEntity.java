@@ -21,7 +21,7 @@ public class EmpresasEntity extends GenericEntity{
     private String nmEmpresa;
 
     @Column(name = "CNPJ_EMPRESA", nullable = false, length = 100)
-    private String cnpjEmpresa;
+    private Long cnpjEmpresa;
 
     @Column(name = "NR_TEL_EMPRESA", nullable = false, length = 12)
     private Long nrTelEmpresa;

@@ -1,6 +1,5 @@
 package br.gov.mg.uberlandia.decserver.entity;
 
-
 import io.swagger.annotations.ApiModel;
 import lombok.*;
 import javax.persistence.*;
@@ -24,7 +23,7 @@ public class AcessosEntity extends GenericEntity{
     private String nmAcesso;
 
     @Column(name = "CPF_CNPJ_ACESSO", nullable = false, length = 15)
-    private String cpfCnpjAcesso;
+    private Long cpfCnpjAcesso;
 
     @Column(name = "NR_TEL_ACESSO", nullable = false, length = 12)
     private Long nrTelAcesso;

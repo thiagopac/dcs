@@ -23,14 +23,16 @@ public class SiatService {
 
     public void buscarEAtualizarAcesso(String cpfCnpj, long nrTelAcesso, String dsEmailAcesso) {
         PessoasEntity pessoasEntity = pessoasRepository.findByCpfCnpj(cpfCnpj);
+
+        Long cpfCnpjLong = Long.parseLong(cpfCnpj);
     
         if (pessoasEntity != null) {
-            List<AcessosEntity> acessosEntities = acessosRepository.findByCpfCnpjAcesso(cpfCnpj);
+            List<AcessosEntity> acessosEntities = acessosRepository.findByCpfCnpjAcesso(cpfCnpjLong);
     
             if (acessosEntities.isEmpty()) {
                 AcessosEntity acessosEntity = new AcessosEntity();
                 acessosEntity.setNmAcesso(pessoasEntity.getNomRazCom());
-                acessosEntity.setCpfCnpjAcesso(cpfCnpj);
+                acessosEntity.setCpfCnpjAcesso(cpfCnpjLong);
                 acessosEntity.setNrTelAcesso(nrTelAcesso);
                 acessosEntity.setDsEmailAcesso(dsEmailAcesso);
                 acessosEntity.setStatusAcesso(1L);

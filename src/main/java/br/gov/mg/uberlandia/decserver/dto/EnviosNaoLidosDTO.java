@@ -7,7 +7,7 @@ public class EnviosNaoLidosDTO {
     private Long idEmpresa;
     private Long oidEmpresa;
     private String nomeEmpresa;
-    private String cnpjEmpresa;
+    private Long cnpjEmpresa;
     private Long nrTelEmpresa;
     private String dsEmailEmpresa;
     private Long quantidadeNaoLidos;
@@ -16,7 +16,7 @@ public class EnviosNaoLidosDTO {
             Long idEmpresa, 
             Long oidEmpresa, 
             String nomeEmpresa, 
-            String cnpjEmpresa, 
+            Long cnpjEmpresa, 
             Long nrTelEmpresa, 
             String dsEmailEmpresa, 
             Long quantidadeNaoLidos) {

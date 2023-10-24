@@ -22,10 +22,12 @@ import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
 import br.gov.mg.uberlandia.decserver.entity.EmpresasEntity;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
 import br.gov.mg.uberlandia.decserver.entity.RelServidoresEntity;
+import br.gov.mg.uberlandia.decserver.entity.TmpEnviosEntity;
 import br.gov.mg.uberlandia.decserver.repository.AcessosRepository;
 import br.gov.mg.uberlandia.decserver.repository.EmpresasRepository;
 import br.gov.mg.uberlandia.decserver.repository.EnviosRepository;
 import br.gov.mg.uberlandia.decserver.repository.RelServidoresRepository;
+import br.gov.mg.uberlandia.decserver.repository.TmpEnviosRepository;
 
 @Service
 public class EnvioService {
@@ -45,8 +47,12 @@ public class EnvioService {
     @Autowired
     private EmpresasRepository empresasRepository;
 
+    @Autowired
+    private TmpEnviosRepository tmpEnviosRepository;
+
     public List<EnviosNaoLidosDTO> consultarEmpresasNaoLidosPorCpfCnpj(String cpfCnpj) {
         try {
+            
             List<EmpresaDTO> empresasAcesso = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
             Long totalMassNaoLidos = enviosRepository.countTotalMassNaoLidos();
             List<EnviosNaoLidosDTO> empresasNaoLidos = new ArrayList<>();
@@ -116,9 +122,11 @@ public class EnvioService {
     public EnvioDTO mostrarEnvioContribuintePorId(long idEnvio, String cpfCnpjAcesso) {
         try {
 
+            Long cpfCnpjAcessoLong = Long.parseLong(cpfCnpjAcesso);
+
             EnviosEntity enviosEntity = enviosRepository.findByIdEnvio(idEnvio);
 
-            AcessosEntity acessosEntity = acessosRepository.findByCpfCnpjAcessoAndIdEmpresa(cpfCnpjAcesso, enviosEntity.getIdEmpresa());
+            AcessosEntity acessosEntity = acessosRepository.findByCpfCnpjAcessoAndIdEmpresa(cpfCnpjAcessoLong, enviosEntity.getIdEmpresa());
 
             if (acessosEntity != null && enviosEntity.getTpEnvio() == 1) {
                 enviosRepository.atualizarStatusEnvioSeNecessario(idEnvio, 1, acessosEntity.getNmAcesso(), new Date());
@@ -184,13 +192,13 @@ public class EnvioService {
     public EnvioDTO criarEnvio(EnvioDTO novoEnvioDTO) {
         try {
 
-            String cpfCnpjEnvio = novoEnvioDTO.getCpfCnpjEnvio();
+            Long cpfCnpjEnvioLong = novoEnvioDTO.getCpfCnpjEnvio();
             EmpresasEntity empresa = new EmpresasEntity();
 
-            if (cpfCnpjEnvio != null && !cpfCnpjEnvio.equals("0")) {
-                empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvio);
+            if (cpfCnpjEnvioLong > 0) {
+                empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvioLong);
                 if (empresa == null) {
-                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvio);
+                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvioLong);
                 }
             } else {
                 empresa = new EmpresasEntity();
@@ -203,28 +211,84 @@ public class EnvioService {
                 throw new RuntimeException("Servidor não encontrado com o CPF fornecido: " + cpfServidor);
             }
 
-            EnviosEntity envioEntity = new EnviosEntity();
-            envioEntity.setDtHrEnvio(new Date());
-            envioEntity.setDsTituloEnvio(novoEnvioDTO.getDsTituloEnvio());
-            envioEntity.setDsComunicEnvio(novoEnvioDTO.getDsComunicEnvio());
-            envioEntity.setStatusEnvio(0L);
-            envioEntity.setQtDiasCiencia(novoEnvioDTO.getQtDiasCiencia());
-            envioEntity.setTpEnvio(novoEnvioDTO.getTpEnvio());
-            envioEntity.setUsuConfigEnvio(servidor.getNrCpfServidor());
-            envioEntity.setDtHrConfigEnvio(novoEnvioDTO.getDtHrConfigEnvio());
-            envioEntity.setCpfCnpjEnvio(novoEnvioDTO.getCpfCnpjEnvio());
-            envioEntity.setDsUsuAlter(servidor.getNmServidor());
-            envioEntity.setDtUltAlter(new Date());
-            envioEntity.setVsVersao(1L);
-            envioEntity.setNrProtocolo(novoEnvioDTO.getNrProtocolo());
-            envioEntity.setIdSecretaria(servidor.getIdSecretaria());
-            envioEntity.setIdEmpresa(empresa.getOidEmpresa());
+            TmpEnviosEntity tmpEnvioEntity = new TmpEnviosEntity();
+            tmpEnvioEntity.setDsTituloEnvio(novoEnvioDTO.getDsTituloEnvio());
+            tmpEnvioEntity.setDsComunicEnvio(novoEnvioDTO.getDsComunicEnvio());
+            tmpEnvioEntity.setStatusEnvio(0L);
+            tmpEnvioEntity.setQtDiasCiencia(novoEnvioDTO.getQtDiasCiencia());
+            tmpEnvioEntity.setTpEnvio(novoEnvioDTO.getTpEnvio());
+            tmpEnvioEntity.setUsuConfigEnvio(String.valueOf(servidor.getNrCpfServidor()));
+            tmpEnvioEntity.setDtHrConfigEnvio(novoEnvioDTO.getDtHrConfigEnvio());
+            tmpEnvioEntity.setCpfCnpjEnvio(novoEnvioDTO.getCpfCnpjEnvio());
+            tmpEnvioEntity.setDsUsuAlter(servidor.getNmServidor());
+            tmpEnvioEntity.setDtUltAlter(new Date());
+            tmpEnvioEntity.setVsVersao(0L);
+            tmpEnvioEntity.setNrProtocolo(novoEnvioDTO.getNrProtocolo());
+            tmpEnvioEntity.setIdSecretaria(servidor.getIdSecretaria());
+            tmpEnvioEntity.setIdEmpresa(empresa.getOidEmpresa());
+            tmpEnvioEntity.setSituacEnvio(0L);
 
-            envioEntity = enviosRepository.save(envioEntity);
+            tmpEnvioEntity = tmpEnviosRepository.save(tmpEnvioEntity);
 
-            return convertToEnvioDTO(envioEntity);
+            return convertToEnvioDTO(tmpEnvioEntity);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao criar envio.", e);
+        }
+    }
+
+    @Transactional
+    public void executarEnviosProgramados() {
+        try {
+            StringBuilder log = new StringBuilder("Envios programados processados: ");
+
+            List<TmpEnviosEntity> enviosProgramados = tmpEnviosRepository.findEnviosProgramados();
+
+            this.limparEnviosExecutados();
+            log.append("Registros enviados anteriormente foram excluídos.");
+            
+            
+            for (TmpEnviosEntity envioProgramado : enviosProgramados) {
+                try {
+                    EnviosEntity novoEnvio = new EnviosEntity();
+                    novoEnvio.setIdEmpresa(envioProgramado.getIdEmpresa());
+                    novoEnvio.setTpEnvio(envioProgramado.getTpEnvio());
+                    novoEnvio.setQtDiasCiencia(envioProgramado.getQtDiasCiencia());
+                    novoEnvio.setDsTituloEnvio(envioProgramado.getDsTituloEnvio());
+                    novoEnvio.setDsComunicEnvio(envioProgramado.getDsComunicEnvio());
+                    novoEnvio.setUsuConfigEnvio(envioProgramado.getUsuConfigEnvio());
+                    novoEnvio.setDtHrConfigEnvio(envioProgramado.getDtHrConfigEnvio());
+                    novoEnvio.setCpfCnpjEnvio(envioProgramado.getCpfCnpjEnvio());
+                    novoEnvio.setDsUsuAlter(envioProgramado.getDsUsuAlter());
+                    novoEnvio.setStatusEnvio(0L);
+                    novoEnvio.setNrProtocolo(envioProgramado.getNrProtocolo());
+                    novoEnvio.setIdSecretaria(envioProgramado.getIdSecretaria());
+                    novoEnvio.setVsVersao(0L);
+                    novoEnvio.setDtUltAlter(new Date());
+                    novoEnvio.setDtHrEnvio(new Date());
+                    
+                    enviosRepository.save(novoEnvio);
+                    
+                    envioProgramado.setSituacEnvio(1L);
+                    tmpEnviosRepository.save(envioProgramado);
+                    
+                    log.append("Envio DtUltAlter: ").append(envioProgramado.getDtUltAlter()).append(", ");
+                } catch (Exception ex) {
+                    log.append("Erro no processamento do envio com DtUltAlter: ").append(envioProgramado.getDtUltAlter()).append(", ");
+                }
+            }
+            
+        } catch (Exception e) {
+            throw new ServiceException("Erro ao executar envios programados.", e);
+        }
+    }
+
+    @Transactional
+    public void limparEnviosExecutados() {
+        try {
+            List<TmpEnviosEntity> enviosEnviados = tmpEnviosRepository.findEnviosExecutados();
+            tmpEnviosRepository.deleteAll(enviosEnviados);
+        } catch (Exception e) {
+            throw new ServiceException("Erro ao limpar envios enviados.", e);
         }
     }
 

@@ -3,13 +3,13 @@ package br.gov.mg.uberlandia.decserver.dto;
 public class EmpresaDTO {
     private Long oidEmpresa;
     private String nmEmpresa;
-    private String cnpjEmpresa;
+    private Long cnpjEmpresa;
     private Long nrTelEmpresa;
     private String dsEmailEmpresa;
 
     public EmpresaDTO(){}
 
-    public EmpresaDTO(Long oidEmpresa, String nmEmpresa, String cnpjEmpresa, Long nrTelEmpresa, String dsEmailEmpresa) {
+    public EmpresaDTO(Long oidEmpresa, String nmEmpresa, Long cnpjEmpresa, Long nrTelEmpresa, String dsEmailEmpresa) {
         this.oidEmpresa = oidEmpresa;
         this.nmEmpresa = nmEmpresa;
         this.cnpjEmpresa = cnpjEmpresa;
@@ -33,11 +33,11 @@ public class EmpresaDTO {
         this.nmEmpresa = nmEmpresa;
     }
 
-    public String getCnpjEmpresa() {
+    public Long getCnpjEmpresa() {
         return cnpjEmpresa;
     }
 
-    public void setCnpjEmpresa(String cnpjEmpresa) {
+    public void setCnpjEmpresa(Long cnpjEmpresa) {
         this.cnpjEmpresa = cnpjEmpresa;
     }
 
