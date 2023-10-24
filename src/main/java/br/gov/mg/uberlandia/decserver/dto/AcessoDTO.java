@@ -7,19 +7,19 @@ public class AcessoDTO {
     private Long oidAcesso;
     private Long idEmpresa;
     private String nmAcesso;
-    private String cpfCnpjAcesso;
+    private Long cpfCnpjAcesso;
     private Long nrTelAcesso;
     private String dsEmailAcesso;
     private Long statusAcesso;
 
     public AcessoDTO() {};
 
-    public AcessoDTO(String nmAcesso, String cpfCnpjAcesso) {
+    public AcessoDTO(String nmAcesso, Long cpfCnpjAcesso) {
         this.nmAcesso = nmAcesso;
         this.cpfCnpjAcesso = cpfCnpjAcesso;
     }
 
-    public AcessoDTO(Long oidAcesso, Long idEmpresa, String nmAcesso, String cpfCnpjAcesso, 
+    public AcessoDTO(Long oidAcesso, Long idEmpresa, String nmAcesso, Long cpfCnpjAcesso, 
                      Long nrTelAcesso, String dsEmailAcesso, Long statusAcesso) {
         this.oidAcesso = oidAcesso;
         this.idEmpresa = idEmpresa;

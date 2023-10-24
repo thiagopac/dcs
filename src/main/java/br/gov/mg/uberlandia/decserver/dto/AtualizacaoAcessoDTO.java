@@ -4,14 +4,14 @@ import lombok.Data;
 
 @Data
 public class AtualizacaoAcessoDTO {
-    private String cpfCnpjAcesso;
+    private Long cpfCnpjAcesso;
     private String nmAcesso;
     private long nrTelAcesso;
     private String dsEmailAcesso;
 
     public AtualizacaoAcessoDTO() {}
 
-    public AtualizacaoAcessoDTO(String cpfCnpjAcesso, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
+    public AtualizacaoAcessoDTO(Long cpfCnpjAcesso, String nmAcesso, long nrTelAcesso, String dsEmailAcesso) {
         this.cpfCnpjAcesso = cpfCnpjAcesso;
         this.nmAcesso = nmAcesso;
         this.nrTelAcesso = nrTelAcesso;

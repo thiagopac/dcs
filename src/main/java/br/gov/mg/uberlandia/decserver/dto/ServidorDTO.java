@@ -4,7 +4,7 @@ public class ServidorDTO {
 
     private Long idSecretaria;
     private Long oidServidor;
-    private String nrCpfServidor;
+    private Long nrCpfServidor;
     private String nmServidor;
     private Long idCargo;
 
@@ -26,11 +26,11 @@ public class ServidorDTO {
         this.oidServidor = oidServidor;
     }
 
-    public String getNrCpfServidor() {
+    public Long getNrCpfServidor() {
         return nrCpfServidor;
     }
 
-    public void setNrCpfServidor(String nrCpfServidor) {
+    public void setNrCpfServidor(Long nrCpfServidor) {
         this.nrCpfServidor = nrCpfServidor;
     }
 

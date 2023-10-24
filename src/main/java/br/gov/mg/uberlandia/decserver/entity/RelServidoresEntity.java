@@ -21,7 +21,7 @@ public class RelServidoresEntity extends GenericEntity {
     private Long idSecretaria;
 
     @Column(name = "NR_CPF_SERVIDOR", nullable = false, length = 15)
-    private String nrCpfServidor;
+    private Long nrCpfServidor;
 
     @Column(name = "NM_SERVIDOR", nullable = true, length = 255)
     private String nmServidor;
