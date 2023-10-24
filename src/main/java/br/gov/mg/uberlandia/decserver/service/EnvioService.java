@@ -10,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnvioDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnviosNaoLidosDTO;
+import br.gov.mg.uberlandia.decserver.dto.ServidorDTO;
 import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
 import br.gov.mg.uberlandia.decserver.entity.EmpresasEntity;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
@@ -288,5 +291,6 @@ public class EnvioService {
             throw new ServiceException("Erro ao limpar envios enviados.", e);
         }
     }
+
 
 }
