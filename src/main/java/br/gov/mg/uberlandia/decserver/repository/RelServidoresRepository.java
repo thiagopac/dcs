@@ -9,7 +9,7 @@ public interface RelServidoresRepository extends JpaRepository<RelServidoresEnti
     
     RelServidoresEntity findByOidServidor(Long oidServidor);
 
-    RelServidoresEntity findByNrCpfServidor(String cpf);
+    RelServidoresEntity findByNrCpfServidor(Long cpf);
     
     List<RelServidoresEntity> findByIdSecretaria(Long idSecretaria);
 

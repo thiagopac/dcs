@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE ACESSOS.")
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
 @Table(name = "ACESSOS", schema = "DB_DEC")
@@ -22,7 +23,7 @@ public class AcessosEntity extends GenericEntity{
     @Column(name = "NM_ACESSO", nullable = false, length = 100)
     private String nmAcesso;
 
-    @Column(name = "CPF_CNPJ_ACESSO", nullable = false, length = 15)
+    @Column(name = "NR_CPF_CNPJ_ACESSO", nullable = false, length = 15)
     private Long cpfCnpjAcesso;
 
     @Column(name = "NR_TEL_ACESSO", nullable = false, length = 12)
@@ -31,7 +32,7 @@ public class AcessosEntity extends GenericEntity{
     @Column(name = "DS_EMAIL_ACESSO", nullable = false, length = 100)
     private String dsEmailAcesso;
 
-    @Column(name = "STATUS_ACESSO", nullable = false, length = 1)
+    @Column(name = "ID_STATUS_ACESSO", nullable = false, length = 1)
     private Long statusAcesso;
 
     @Column(name = "DS_USU_ALTER", nullable = false, length = 30)

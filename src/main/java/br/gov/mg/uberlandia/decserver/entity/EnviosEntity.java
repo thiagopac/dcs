@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE ENVIOS.")
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
 @Table(name = "ENVIOS", schema = "DB_DEC")
@@ -36,17 +37,17 @@ public class EnviosEntity extends GenericEntity{
     @Column(name = "DS_COMUNIC_ENVIO", nullable = false)
     private String dsComunicEnvio;
 
-    @Column(name = "USU_CONFIG_ENVIO", nullable = true, length = 30)
+    @Column(name = "NM_USU_CONFIG_ENVIO", nullable = true, length = 30)
     private String usuConfigEnvio;
 
     @Column(name = "DT_HR_CONFIG_ENVIO", nullable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtHrConfigEnvio;
 
-    @Column(name = "CPF_CNPJ_ENVIO", nullable = false, length = 15)
+    @Column(name = "NR_CPF_CNPJ_ENVIO", nullable = false, length = 15)
     private Long cpfCnpjEnvio;
 
-    @Column(name = "STATUS_ENVIO", nullable = false, length = 1)
+    @Column(name = "ID_STATUS_ENVIO", nullable = false, length = 1)
     private Long statusEnvio;
 
     @Column(name = "DS_USU_ALTER", nullable = false, length = 30)
