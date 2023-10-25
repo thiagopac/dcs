@@ -315,6 +315,24 @@ public class EnvioService {
             throw new ServiceException("Erro ao limpar envios enviados.", e);
         }
     }
+    
+    @Transactional
+    public void marcarEnviosComoLidos() {
+        try {
 
+            Date dataAtual = new Date();
+            List<EnviosEntity> enviosParaMarcarComoLidos = enviosRepository.findEnviosElegiveisParaMarcarComoLidos(dataAtual);
+            
+            for (EnviosEntity envio : enviosParaMarcarComoLidos) {
+                envio.setStatusEnvio(1L);
+                envio.setDsUsuAlter("Ciência via sistema");
+                envio.setDtUltAlter(dataAtual);
+                enviosRepository.save(envio);
+            }
 
+        } catch (Exception e) {
+            throw new ServiceException("Erro ao marcar envios como lidos.", e);
+        }
+    }
+    
 }
