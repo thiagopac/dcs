@@ -32,7 +32,7 @@ public class ProcessosAutomatizadosController {
 
             Map<String, String> response = new HashMap<>();
             response.put("message", "Envios programados foram executados com sucesso");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
 
         } catch (ServiceException e) {
             logger.error("Erro ao executar envios", e);

@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE EMPRESAS.")
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
 @Table(name = "EMPRESAS", schema = "DB_DEC")
@@ -20,7 +21,7 @@ public class EmpresasEntity extends GenericEntity{
     @Column(name = "NM_EMPRESA", nullable = false, length = 100)
     private String nmEmpresa;
 
-    @Column(name = "CNPJ_EMPRESA", nullable = false, length = 100)
+    @Column(name = "NR_CNPJ_EMPRESA", nullable = false, length = 100)
     private Long cnpjEmpresa;
 
     @Column(name = "NR_TEL_EMPRESA", nullable = false, length = 12)

@@ -33,7 +33,9 @@ public class ServidorService {
 
     public ServidorDTO encontrarServidorPorCpf(String cpf) {
 
-        RelServidoresEntity servidorEntity = relServidoresRepository.findByNrCpfServidor(cpf);
+        Long cpfServidorLong = Long.parseLong(cpf);
+
+        RelServidoresEntity servidorEntity = relServidoresRepository.findByNrCpfServidor(cpfServidorLong);
         
         if (servidorEntity != null) {
             ServidorDTO servidorDTO = new ServidorDTO();

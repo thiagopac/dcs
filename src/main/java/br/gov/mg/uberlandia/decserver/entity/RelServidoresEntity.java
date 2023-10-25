@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.Date;
 
 @ApiModel(description = "TABELA DE RELACIONAMENTO DE SERVIDORES.")
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
 @Table(name = "REL_SERVIDORES", schema = "DB_DEC")
