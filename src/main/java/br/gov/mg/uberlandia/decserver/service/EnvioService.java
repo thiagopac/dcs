@@ -223,7 +223,7 @@ public class EnvioService {
             if (cpfCnpjEnvio > 0) {
                 empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvio);
                 if (empresa == null) {
-                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvioLong);
+                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvio);
                 }
             } else {
                 empresa = new EmpresasEntity();
