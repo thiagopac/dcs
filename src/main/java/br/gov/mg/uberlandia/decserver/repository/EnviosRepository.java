@@ -25,7 +25,7 @@ public interface EnviosRepository extends JpaRepository<EnviosEntity, Long> {
        "AND emp.oidEmpresa = :oidEmpresa " +
        "AND e.statusEnvio = 0 " +
        "GROUP BY e.idEmpresa, emp.oidEmpresa, emp.nmEmpresa, emp.cnpjEmpresa, emp.nrTelEmpresa, emp.dsEmailEmpresa")
-    List<Object[]> countNaoLidosPorEmpresa(@Param("cpfCnpj") String cpfCnpj, @Param("oidEmpresa") Long oidEmpresa);
+    List<Object[]> countNaoLidosPorEmpresa(@Param("cpfCnpj") Long cpfCnpj, @Param("oidEmpresa") Long oidEmpresa);
 
     @Query("SELECT e FROM EnviosEntity e " +
            "WHERE (:status IS NULL OR e.statusEnvio = :status) " +

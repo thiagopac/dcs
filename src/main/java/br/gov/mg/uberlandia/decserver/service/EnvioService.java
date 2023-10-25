@@ -10,14 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import br.gov.mg.uberlandia.decserver.dto.EmpresaDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnvioDTO;
 import br.gov.mg.uberlandia.decserver.dto.EnviosNaoLidosDTO;
-import br.gov.mg.uberlandia.decserver.dto.ServidorDTO;
 import br.gov.mg.uberlandia.decserver.entity.AcessosEntity;
 import br.gov.mg.uberlandia.decserver.entity.EmpresasEntity;
 import br.gov.mg.uberlandia.decserver.entity.EnviosEntity;
@@ -53,6 +50,8 @@ public class EnvioService {
     public List<EnviosNaoLidosDTO> consultarEmpresasNaoLidosPorCpfCnpj(String cpfCnpj) {
         try {
             
+            Long cpfCnpjLong = Long.parseLong(cpfCnpj);
+
             List<EmpresaDTO> empresasAcesso = acessoService.consultarEmpresasPorCpfCnpj(cpfCnpj);
             Long totalMassNaoLidos = enviosRepository.countTotalMassNaoLidos();
             List<EnviosNaoLidosDTO> empresasNaoLidos = new ArrayList<>();
@@ -60,7 +59,7 @@ public class EnvioService {
 
             for (EmpresaDTO empresa : empresasAcesso) {
                 Long oidEmpresa = empresa.getOidEmpresa();
-                List<Object[]> resultados = enviosRepository.countNaoLidosPorEmpresa(cpfCnpj, oidEmpresa);
+                List<Object[]> resultados = enviosRepository.countNaoLidosPorEmpresa(cpfCnpjLong, oidEmpresa);
                 
                 for (Object[] resultado : resultados) {
                     Long idEmpresa = (Long) resultado[0];
@@ -188,25 +187,50 @@ public class EnvioService {
         }
     }
 
+    private EnvioDTO convertToEnvioDTO(TmpEnviosEntity tmpEnvioEntity) {
+        if (tmpEnvioEntity != null) {
+            EnvioDTO envioDTO = new EnvioDTO();
+            envioDTO.setDsTituloEnvio(tmpEnvioEntity.getDsTituloEnvio());
+            envioDTO.setSituacEnvio(tmpEnvioEntity.getSituacEnvio());
+            envioDTO.setDsComunicEnvio(tmpEnvioEntity.getDsComunicEnvio());
+            envioDTO.setStatusEnvio(tmpEnvioEntity.getStatusEnvio());
+            envioDTO.setQtDiasCiencia(tmpEnvioEntity.getQtDiasCiencia());
+            envioDTO.setTpEnvio(tmpEnvioEntity.getTpEnvio());
+            envioDTO.setUsuConfigEnvio(tmpEnvioEntity.getUsuConfigEnvio());
+            envioDTO.setDtHrConfigEnvio(tmpEnvioEntity.getDtHrConfigEnvio());
+            envioDTO.setCpfCnpjEnvio(tmpEnvioEntity.getCpfCnpjEnvio());
+            envioDTO.setDsUsuAlter(tmpEnvioEntity.getDsUsuAlter());
+            envioDTO.setDtUltAlter(tmpEnvioEntity.getDtUltAlter());
+            envioDTO.setVsVersao(tmpEnvioEntity.getVsVersao());
+            envioDTO.setNrProtocolo(tmpEnvioEntity.getNrProtocolo());
+            envioDTO.setIdSecretaria(tmpEnvioEntity.getIdSecretaria());
+            
+            return envioDTO;
+        } else {
+            return null;
+        }
+    }
+
     @Transactional
     public EnvioDTO criarEnvio(EnvioDTO novoEnvioDTO) {
         try {
 
-            Long cpfCnpjEnvioLong = novoEnvioDTO.getCpfCnpjEnvio();
+            Long cpfCnpjEnvio = novoEnvioDTO.getCpfCnpjEnvio();
+            String cpfServidor = novoEnvioDTO.getCpfServidor();
+            Long cpfServidorLong = Long.parseLong(cpfServidor);
             EmpresasEntity empresa = new EmpresasEntity();
 
-            if (cpfCnpjEnvioLong > 0) {
-                empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvioLong);
+            if (cpfCnpjEnvio > 0) {
+                empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvio);
                 if (empresa == null) {
-                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvioLong);
+                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvio);
                 }
             } else {
                 empresa = new EmpresasEntity();
                 empresa.setOidEmpresa(0L);
             }
 
-            String cpfServidor = novoEnvioDTO.getCpfServidor();
-            RelServidoresEntity servidor = relServidoresRepository.findByNrCpfServidor(cpfServidor);
+            RelServidoresEntity servidor = relServidoresRepository.findByNrCpfServidor(cpfServidorLong);
             if (servidor == null) {
                 throw new RuntimeException("Servidor não encontrado com o CPF fornecido: " + cpfServidor);
             }
@@ -217,7 +241,7 @@ public class EnvioService {
             tmpEnvioEntity.setStatusEnvio(0L);
             tmpEnvioEntity.setQtDiasCiencia(novoEnvioDTO.getQtDiasCiencia());
             tmpEnvioEntity.setTpEnvio(novoEnvioDTO.getTpEnvio());
-            tmpEnvioEntity.setUsuConfigEnvio(String.valueOf(servidor.getNrCpfServidor()));
+            tmpEnvioEntity.setUsuConfigEnvio(cpfServidor);
             tmpEnvioEntity.setDtHrConfigEnvio(novoEnvioDTO.getDtHrConfigEnvio());
             tmpEnvioEntity.setCpfCnpjEnvio(novoEnvioDTO.getCpfCnpjEnvio());
             tmpEnvioEntity.setDsUsuAlter(servidor.getNmServidor());
