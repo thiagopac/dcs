@@ -44,21 +44,22 @@ public class ProcessosAutomatizadosController {
 
     @ApiOperation(value = "Marca como lidos os envios a partir da quantidade de dias de ciência")
     @PostMapping("/marcar-envios-lidos")
-    public ResponseEntity<?> MarcarEnviosLidos() {
+    public ResponseEntity<?> marcarEnviosLidos() {
         try {
-            envioService.executarEnviosProgramados();
+            envioService.marcarEnviosComoLidos();
 
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Envios programados foram executados com sucesso");
+            response.put("message", "Envios foram marcados como lidos com sucesso");
             return ResponseEntity.status(HttpStatus.OK).body(response);
 
         } catch (ServiceException e) {
-            logger.error("Erro ao executar envios", e);
+            logger.error("Erro ao marcar envios como lidos", e);
             
             ErrorMessage errorMessage = new ErrorMessage("INTERNAL_SERVER_ERROR", "Erro interno do servidor: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
         }
     }
+
 
 
 }
