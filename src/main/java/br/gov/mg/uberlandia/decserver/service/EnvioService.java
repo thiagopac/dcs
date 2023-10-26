@@ -1,6 +1,8 @@
 package br.gov.mg.uberlandia.decserver.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -159,17 +161,41 @@ public class EnvioService {
 
     public Page<EnvioDTO> listarEnviosPorIdServidores(List<Long> idServidores, Long status, Pageable pageable) {
         List<Long> cpfsServidores = relServidoresRepository.findCpfByOidServidorIn(idServidores);
-
+    
         List<String> cpfsFormatados = new ArrayList<>();
-
+    
         for (Long cpf : cpfsServidores) {
             String cpfFormatado = StringUtils.prefixLeadingZeroes(cpf.intValue(), 11);
             cpfsFormatados.add(cpfFormatado);
         }
-
+    
         Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvioInAndStatusEnvio(cpfsFormatados, status, pageable);
-        return enviosPage.map(this::convertToEnvioDTO);
+    
+        Page<TmpEnviosEntity> tmpEnviosPage = tmpEnviosRepository.findByUsuConfigEnvioInAndStatusEnvio(cpfsFormatados, status, pageable);
+    
+        List<EnviosEntity> enviosList = enviosPage.getContent();
+        List<TmpEnviosEntity> tmpEnviosList = tmpEnviosPage.getContent();
+        List<EnvioDTO> combinedList = new ArrayList<>();
+    
+        for (EnviosEntity envioEntity : enviosList) {
+            EnvioDTO envioDTO = convertToEnvioDTO(envioEntity);
+            envioDTO.setEstado("Envio efetuado");
+            combinedList.add(envioDTO);
+        }
+    
+        for (TmpEnviosEntity tmpEnvioEntity : tmpEnviosList) {
+            EnvioDTO tmpEnvioDTO = convertToEnvioDTO(tmpEnvioEntity);
+            tmpEnvioDTO.setEstado("Envio programado");
+            combinedList.add(tmpEnvioDTO);
+        }
+    
+        Collections.sort(combinedList, Comparator.comparing(EnvioDTO::getDtHrConfigEnvio).reversed());
+    
+        Page<EnvioDTO> resultPage = new PageImpl<>(combinedList, pageable, combinedList.size());
+    
+        return resultPage;
     }
+    
 
     private EnvioDTO convertToEnvioDTO(EnviosEntity envioEntity) {
         if (envioEntity != null) {
@@ -224,15 +250,17 @@ public class EnvioService {
     public EnvioDTO criarEnvio(EnvioDTO novoEnvioDTO) {
         try {
 
-            Long cpfCnpjEnvio = novoEnvioDTO.getCpfCnpjEnvio();
+            Long cpfCnpjEnvioLong = novoEnvioDTO.getCpfCnpjEnvio().longValue();
             String cpfServidor = novoEnvioDTO.getCpfServidor();
             Long cpfServidorLong = Long.parseLong(cpfServidor);
             EmpresasEntity empresa = new EmpresasEntity();
 
-            if (cpfCnpjEnvio > 0) {
-                empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvio);
+            Long nrProtocoloLong = novoEnvioDTO.getNrProtocolo().longValue();
+
+            if (cpfCnpjEnvioLong > 0) {
+                empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvioLong);
                 if (empresa == null) {
-                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvio);
+                    throw new RuntimeException("Empresa não encontrada com o CPF/CNPJ fornecido: " + cpfCnpjEnvioLong);
                 }
             } else {
                 empresa = new EmpresasEntity();
@@ -252,11 +280,11 @@ public class EnvioService {
             tmpEnvioEntity.setTpEnvio(novoEnvioDTO.getTpEnvio());
             tmpEnvioEntity.setUsuConfigEnvio(cpfServidor);
             tmpEnvioEntity.setDtHrConfigEnvio(novoEnvioDTO.getDtHrConfigEnvio());
-            tmpEnvioEntity.setCpfCnpjEnvio(novoEnvioDTO.getCpfCnpjEnvio());
+            tmpEnvioEntity.setCpfCnpjEnvio(cpfCnpjEnvioLong);
             tmpEnvioEntity.setDsUsuAlter(servidor.getNmServidor());
             tmpEnvioEntity.setDtUltAlter(new Date());
             tmpEnvioEntity.setVsVersao(0L);
-            tmpEnvioEntity.setNrProtocolo(novoEnvioDTO.getNrProtocolo());
+            tmpEnvioEntity.setNrProtocolo(nrProtocoloLong);
             tmpEnvioEntity.setIdSecretaria(servidor.getIdSecretaria());
             tmpEnvioEntity.setIdEmpresa(empresa.getOidEmpresa());
             tmpEnvioEntity.setSituacEnvio(0L);
