@@ -82,7 +82,7 @@ public class ServidorEnvioController {
             if (servidorDTO.getIdCargo() == 1) {
                 if (oidServidor != null) {
                     ServidorDTO servidorPorOid = servidorService.encontrarServidorPorOidServidor(oidServidor);
-                    if (servidorPorOid.getIdSecretaria() != servidorDTO.getIdSecretaria()) {
+                    if (servidorPorOid.getIdSecretaria().intValue() != servidorDTO.getIdSecretaria().intValue()) {
                         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
                     } else {
                         idServidores.add(oidServidor);

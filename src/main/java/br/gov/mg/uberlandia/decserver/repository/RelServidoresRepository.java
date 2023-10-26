@@ -14,9 +14,9 @@ public interface RelServidoresRepository extends JpaRepository<RelServidoresEnti
     List<RelServidoresEntity> findByIdSecretaria(Long idSecretaria);
 
     @Query("SELECT r.nrCpfServidor FROM RelServidoresEntity r WHERE r.oidServidor IN :oidServidores")
-    List<String> findCpfByOidServidorIn(@Param("oidServidores") List<Long> oidServidores);
+    List<Long> findCpfByOidServidorIn(@Param("oidServidores") List<Long> oidServidores);
 
     @Query("SELECT r.nrCpfServidor FROM RelServidoresEntity r WHERE r.oidServidor = :oidServidor")
-    List<String> findCpfByOidServidor(Long oidServidor);
+    List<Long> findCpfByOidServidor(Long oidServidor);
     
 }

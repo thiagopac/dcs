@@ -25,6 +25,7 @@ import br.gov.mg.uberlandia.decserver.repository.EmpresasRepository;
 import br.gov.mg.uberlandia.decserver.repository.EnviosRepository;
 import br.gov.mg.uberlandia.decserver.repository.RelServidoresRepository;
 import br.gov.mg.uberlandia.decserver.repository.TmpEnviosRepository;
+import br.gov.mg.uberlandia.decserver.utils.StringUtils;
 
 @Service
 public class EnvioService {
@@ -157,8 +158,16 @@ public class EnvioService {
     }
 
     public Page<EnvioDTO> listarEnviosPorIdServidores(List<Long> idServidores, Long status, Pageable pageable) {
-        List<String> cpfsServidores = relServidoresRepository.findCpfByOidServidorIn(idServidores);
-        Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvioInAndStatusEnvio(cpfsServidores, status, pageable);
+        List<Long> cpfsServidores = relServidoresRepository.findCpfByOidServidorIn(idServidores);
+
+        List<String> cpfsFormatados = new ArrayList<>();
+
+        for (Long cpf : cpfsServidores) {
+            String cpfFormatado = StringUtils.prefixLeadingZeroes(cpf.intValue(), 11);
+            cpfsFormatados.add(cpfFormatado);
+        }
+
+        Page<EnviosEntity> enviosPage = enviosRepository.findByUsuConfigEnvioInAndStatusEnvio(cpfsFormatados, status, pageable);
         return enviosPage.map(this::convertToEnvioDTO);
     }
 
