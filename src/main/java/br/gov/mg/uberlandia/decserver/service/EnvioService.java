@@ -27,6 +27,7 @@ import br.gov.mg.uberlandia.decserver.repository.EmpresasRepository;
 import br.gov.mg.uberlandia.decserver.repository.EnviosRepository;
 import br.gov.mg.uberlandia.decserver.repository.RelServidoresRepository;
 import br.gov.mg.uberlandia.decserver.repository.TmpEnviosRepository;
+import br.gov.mg.uberlandia.decserver.utils.DateUtils;
 import br.gov.mg.uberlandia.decserver.utils.StringUtils;
 
 @Service
@@ -257,6 +258,9 @@ public class EnvioService {
 
             Long nrProtocoloLong = novoEnvioDTO.getNrProtocolo().longValue();
 
+            Date dtHrConfigEnvioDate = novoEnvioDTO.getDtHrConfigEnvio();
+            Date dtHrConfigEnvioConverted = DateUtils.convertToBrazilTimeZone(dtHrConfigEnvioDate);
+
             if (cpfCnpjEnvioLong > 0) {
                 empresa = empresasRepository.findByCpfCnpjEmpresa(cpfCnpjEnvioLong);
                 if (empresa == null) {
@@ -279,7 +283,7 @@ public class EnvioService {
             tmpEnvioEntity.setQtDiasCiencia(novoEnvioDTO.getQtDiasCiencia());
             tmpEnvioEntity.setTpEnvio(novoEnvioDTO.getTpEnvio());
             tmpEnvioEntity.setUsuConfigEnvio(cpfServidor);
-            tmpEnvioEntity.setDtHrConfigEnvio(novoEnvioDTO.getDtHrConfigEnvio());
+            tmpEnvioEntity.setDtHrConfigEnvio(dtHrConfigEnvioConverted);
             tmpEnvioEntity.setCpfCnpjEnvio(cpfCnpjEnvioLong);
             tmpEnvioEntity.setDsUsuAlter(servidor.getNmServidor());
             tmpEnvioEntity.setDtUltAlter(new Date());

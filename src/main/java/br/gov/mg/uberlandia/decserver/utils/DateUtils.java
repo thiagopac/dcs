@@ -1,10 +1,14 @@
 package br.gov.mg.uberlandia.decserver.utils;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 
 public class DateUtils {
     private static final String DATE_FORMAT = "dd/MM/yyyy";
@@ -38,6 +42,13 @@ public class DateUtils {
     public static String formatarDataMesDia(LocalDate localDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(MONTH_DAY_DATE_FORMAT);
         return localDate.format(formatter);
+    }
+
+    public static Date convertToBrazilTimeZone(Date dateToConvert) {
+        Instant instant = dateToConvert.toInstant();
+        ZoneId brazilZone = ZoneId.of("America/Sao_Paulo");
+        LocalDateTime localDateTimeBrazil = instant.atZone(brazilZone).toLocalDateTime();
+        return Date.from(localDateTimeBrazil.atZone(brazilZone).toInstant());
     }
 
 }
