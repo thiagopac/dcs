@@ -22,6 +22,8 @@ public class EnvioDTO {
     public Long idSecretaria;
     public String cpfServidor;
 
+    private String estado;
+
     public EnvioDTO() {}
     
     public Long getOidEnvio() {
@@ -166,6 +168,14 @@ public class EnvioDTO {
 
     public void setCpfServidor(String cpfServidor) {
         this.cpfServidor = cpfServidor;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
 }
