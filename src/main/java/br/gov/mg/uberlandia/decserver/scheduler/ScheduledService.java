@@ -1,10 +1,12 @@
-package br.gov.mg.uberlandia.decserver.service;
+package br.gov.mg.uberlandia.decserver.scheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import br.gov.mg.uberlandia.decserver.service.EnvioService;
 
 @Service
 public class ScheduledService {

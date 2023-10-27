@@ -137,7 +137,7 @@ public class StringUtils {
      * @param maxLength
      * @return
      */
-    public static String prefixLeadingZeroes(int originalNumber, int maxLength) {
+    public static String prefixLeadingZeroes(Long originalNumber, int maxLength) {
         return String.format("%0" + maxLength + "d", originalNumber);
     }
 

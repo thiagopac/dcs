@@ -166,7 +166,7 @@ public class EnvioService {
         List<String> cpfsFormatados = new ArrayList<>();
     
         for (Long cpf : cpfsServidores) {
-            String cpfFormatado = StringUtils.prefixLeadingZeroes(cpf.intValue(), 11);
+            String cpfFormatado = StringUtils.prefixLeadingZeroes(cpf, 11);
             cpfsFormatados.add(cpfFormatado);
         }
     
